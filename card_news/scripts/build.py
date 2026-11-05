@@ -42,17 +42,40 @@ _PILL = (
     "text-decoration:none;cursor:pointer;border:1px solid rgba(0,0,0,.12);"
     "box-shadow:0 4px 14px rgba(0,0,0,.18);"
 )
-NAV_SNIPPET = (
-    "\n<!-- cardnews-nav: 배포 시 자동 추가됨 -->\n"
-    '<div style="position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));'
-    'transform:translateX(-50%);z-index:2147483647;display:flex;gap:8px">'
-    f'<a href="../" aria-label="전체 카드뉴스 목록" style="{_PILL}background:rgba(255,255,255,.95);color:#17181c">&#8249; 전체 목록</a>'
-    f'<button type="button" data-share="" aria-label="카카오톡으로 공유" style="{_PILL}background:#FEE500;color:#191919">'
+_KAKAO_SVG = (
     '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" '
     'd="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.3 4.6 6.7L5.7 21l3.9-2.6c.8.1 1.6.2 2.4.2 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>'
-    "공유</button></div>\n"
-    '<script src="../assets/config.js"></script><script src="../assets/share.js"></script>\n'
 )
+
+
+def nav_snippet(list_href: str, asset_prefix: str, share_url: str = "", list_label: str = "&#8249; 전체 목록") -> str:
+    """카드 화면 아래에 띄우는 버튼 묶음 (목록 / 카톡 공유). 배포본에만 들어가고 원본은 그대로."""
+    return (
+        "\n<!-- cardnews-nav: 배포 시 자동 추가됨 -->\n"
+        '<div style="position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));'
+        'transform:translateX(-50%);z-index:2147483647;display:flex;gap:8px;white-space:nowrap">'
+        f'<a href="{list_href}" aria-label="지난 카드뉴스 목록" style="{_PILL}background:rgba(255,255,255,.95);color:#17181c">{list_label}</a>'
+        f'<button type="button" data-share="{share_url}" aria-label="카카오톡으로 공유" style="{_PILL}background:#FEE500;color:#191919">'
+        f"{_KAKAO_SVG}공유</button></div>\n"
+        f'<script src="{asset_prefix}config.js"></script><script src="{asset_prefix}share.js"></script>\n'
+    )
+
+
+def decorate(text: str, snippet: str) -> str:
+    """카톡 미리보기용 og:title 보충 + 하단 버튼 삽입"""
+    if not OG_TITLE_RE.search(text):
+        t = TITLE_RE.search(text)
+        if t:
+            og = f'<meta property="og:title" content="{html.escape(html.unescape(t.group(1).strip()))}">'
+            idx = text.lower().find("</head>")
+            if idx != -1:
+                text = text[:idx] + og + "\n" + text[idx:]
+    if "cardnews-nav" not in text:
+        idx = text.lower().rfind("</body>")
+        text = text[:idx] + snippet + text[idx:] if idx != -1 else text + snippet
+    return text
+
+
 OG_TITLE_RE = re.compile(r'property=["\']og:title["\']', re.IGNORECASE)
 
 
@@ -187,22 +210,7 @@ def build():
             if path.is_dir():
                 shutil.copytree(path, dest)
             elif INJECT_NAV and path.suffix.lower() == ".html" and NAME_RE.match(path.name):
-                text = read_text(path)
-                # 카톡 공유 미리보기용 제목이 없으면 <title>로 채워 넣기
-                if not OG_TITLE_RE.search(text):
-                    t = TITLE_RE.search(text)
-                    if t:
-                        og = f'<meta property="og:title" content="{html.escape(html.unescape(t.group(1).strip()))}">'
-                        idx = text.lower().find("</head>")
-                        if idx != -1:
-                            text = text[:idx] + og + "\n" + text[idx:]
-                if "cardnews-nav" not in text:
-                    idx = text.lower().rfind("</body>")
-                    text = (
-                        text[:idx] + NAV_SNIPPET + text[idx:]
-                        if idx != -1
-                        else text + NAV_SNIPPET
-                    )
+                text = decorate(read_text(path), nav_snippet("../archive.html", "../assets/"))
                 dest.write_text(text, encoding="utf-8")
             else:
                 shutil.copy2(path, dest)
@@ -225,18 +233,28 @@ def build():
         encoding="utf-8",
     )
 
-    # 메인 페이지
+    # 모아보기 페이지 (archive.html): 최신 + 지난 카드뉴스 목록
     latest = cards[0] if cards else None
-    archive = cards[1:]
     now = datetime.now(KST)
     page = read_text(TEMPLATE)
     page = (
         page.replace("{{LATEST}}", render_latest(latest))
-        .replace("{{ARCHIVE}}", render_archive(archive))
+        .replace("{{ARCHIVE}}", render_archive(cards[1:]))
         .replace("{{COUNT}}", str(len(cards)))
         .replace("{{UPDATED}}", now.strftime("%Y.%m.%d %H:%M"))
     )
-    (OUT / "index.html").write_text(page, encoding="utf-8")
+    (OUT / "archive.html").write_text(page, encoding="utf-8")
+
+    # 메인 페이지 (index.html): 들어오자마자 가장 최근 카드뉴스가 바로 보이게
+    if latest is not None:
+        text = read_text(CARDS / latest["file"])
+        text = decorate(
+            text,
+            nav_snippet("archive.html", "assets/", latest["url"], "&#9776; 지난 카드뉴스"),
+        )
+        (OUT / "index.html").write_text(text, encoding="utf-8")
+    else:
+        (OUT / "index.html").write_text(page, encoding="utf-8")
 
     # 목록 데이터 (나중에 다른 기능에서 쓸 수 있도록)
     manifest = [{k: v for k, v in c.items() if not k.startswith("_")} for c in cards]
