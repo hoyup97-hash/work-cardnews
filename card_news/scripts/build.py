@@ -130,67 +130,33 @@ def day_label(day: date) -> str:
     return f"{day.month}월 {day.day}일 ({WEEKDAYS[day.weekday()]})"
 
 
-KAKAO_ICON = (
-    '<svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" '
-    'd="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.3 4.6 6.7L5.7 21l3.9-2.6c.8.1 1.6.2 2.4.2 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>'
-)
+def add_base_target(text: str) -> str:
+    """홈 화면 안에서 기사 링크를 누르면 새 창으로 열리도록"""
+    if re.search(r"<base\b", text, re.IGNORECASE):
+        return text
+    m = re.search(r"<head[^>]*>", text, re.IGNORECASE)
+    tag = '<base target="_blank">'
+    return text[: m.end()] + tag + text[m.end():] if m else tag + text
 
 
-def share_button(card, cls, label) -> str:
-    return (
-        f'<button type="button" class="{cls}" data-share="{html.escape(card["url"])}" '
-        f'data-title="{html.escape(card["title"])}" aria-label="{html.escape(card["title"])} 카카오톡으로 공유">'
-        f"{KAKAO_ICON}{label}</button>"
-    )
-
-
-def render_latest(card) -> str:
-    if card is None:
-        return (
-            '<div class="empty">아직 올라온 카드뉴스가 없어요.<br>'
-            "<span>cards 폴더에 YYYY-MM-DD.html 파일을 올리면 여기에 나타납니다.</span></div>"
-        )
-    desc = (
-        f'<p class="hero-desc">{html.escape(card["description"])}</p>'
-        if card["description"]
-        else ""
-    )
-    url = html.escape(card["url"])
-    return (
-        f'<div class="hero">'
-        f'<a class="hero-link" href="{url}">'
-        f'<span class="chip">{day_label(card["_day"])}</span>'
-        f'<h2 class="hero-title">{html.escape(card["title"])}</h2>'
-        f"{desc}</a>"
-        f'<div class="hero-actions">'
-        f'<a class="btn btn-primary" href="{url}">카드뉴스 보기 <span aria-hidden="true">→</span></a>'
-        f'{share_button(card, "btn btn-kakao", "카카오톡 공유")}'
-        f"</div></div>"
-    )
-
-
-def render_archive(cards) -> str:
+def render_feed(cards) -> str:
     if not cards:
-        return '<p class="muted">지난 카드뉴스가 아직 없어요.</p>'
-    parts, current = [], None
-    for c in cards:
-        month = (c["_day"].year, c["_day"].month)
-        if month != current:
-            if current is not None:
-                parts.append("</ul></section>")
-            parts.append(
-                f'<section class="month"><h3>{month[0]}년 {month[1]}월</h3><ul>'
-            )
-            current = month
+        return '<p class="empty">아직 올라온 카드뉴스가 없어요.</p>'
+    parts = []
+    for i, c in enumerate(cards):
+        if i > 0:
+            parts.append(f'<div class="divider">{day_label(c["_day"])}</div>')
         parts.append(
-            f'<li><a href="{html.escape(c["url"])}">'
-            f'<span class="d">{c["_day"].month}/{c["_day"].day}'
-            f'<small>{WEEKDAYS[c["_day"].weekday()]}</small></span>'
-            f'<span class="t">{html.escape(c["title"])}</span>'
-            f'</a>{share_button(c, "share-mini", "")}</li>'
+            f'<iframe class="card-frame" src="embed/{html.escape(c["file"])}" '
+            f'data-url="{html.escape(c["url"])}" title="{html.escape(c["title"])}" '
+            f'loading="{"eager" if i == 0 else "lazy"}"></iframe>'
         )
-    parts.append("</ul></section>")
-    return "".join(parts)
+    first = cards[0]
+    parts.append(
+        f'<button type="button" class="fab" data-share="{html.escape(first["url"])}" '
+        f'data-title="{html.escape(first["title"])}" aria-label="카카오톡으로 공유">{_KAKAO_SVG}공유</button>'
+    )
+    return "\n".join(parts)
 
 
 def build():
@@ -202,6 +168,7 @@ def build():
 
     # 카드 파일 복사 (+ 목록 버튼 삽입)
     (OUT / "cards").mkdir()
+    (OUT / "embed").mkdir()
     if CARDS.exists():
         for path in CARDS.iterdir():
             if path.name.startswith("."):
@@ -210,8 +177,11 @@ def build():
             if path.is_dir():
                 shutil.copytree(path, dest)
             elif INJECT_NAV and path.suffix.lower() == ".html" and NAME_RE.match(path.name):
-                text = decorate(read_text(path), nav_snippet("../archive.html", "../assets/"))
-                dest.write_text(text, encoding="utf-8")
+                raw = read_text(path)
+                # 날짜 주소로 따로 열었을 때: 아래에 '홈 / 공유' 버튼
+                dest.write_text(decorate(raw, nav_snippet("../", "../assets/", "", "&#8249; 홈")), encoding="utf-8")
+                # 홈 화면에 끼워 넣는 용도: 버튼 없이 원본 그대로, 기사 링크는 새 창으로
+                (OUT / "embed" / path.name).write_text(add_base_target(raw), encoding="utf-8")
             else:
                 shutil.copy2(path, dest)
 
@@ -233,28 +203,15 @@ def build():
         encoding="utf-8",
     )
 
-    # 모아보기 페이지 (archive.html): 최신 + 지난 카드뉴스 목록
+    # 홈 화면 (index.html) = 오늘의 카드뉴스 + 아래로 지난 카드뉴스
     latest = cards[0] if cards else None
-    now = datetime.now(KST)
     page = read_text(TEMPLATE)
     page = (
-        page.replace("{{LATEST}}", render_latest(latest))
-        .replace("{{ARCHIVE}}", render_archive(cards[1:]))
-        .replace("{{COUNT}}", str(len(cards)))
-        .replace("{{UPDATED}}", now.strftime("%Y.%m.%d %H:%M"))
+        page.replace("{{FEED}}", render_feed(cards))
+        .replace("{{TITLE}}", html.escape(latest["title"]) if latest else "카드뉴스")
+        .replace("{{DESC}}", html.escape(day_label(latest["_day"])) if latest else "")
     )
-    (OUT / "archive.html").write_text(page, encoding="utf-8")
-
-    # 메인 페이지 (index.html): 들어오자마자 가장 최근 카드뉴스가 바로 보이게
-    if latest is not None:
-        text = read_text(CARDS / latest["file"])
-        text = decorate(
-            text,
-            nav_snippet("archive.html", "assets/", latest["url"], "&#9776; 지난 카드뉴스"),
-        )
-        (OUT / "index.html").write_text(text, encoding="utf-8")
-    else:
-        (OUT / "index.html").write_text(page, encoding="utf-8")
+    (OUT / "index.html").write_text(page, encoding="utf-8")
 
     # 목록 데이터 (나중에 다른 기능에서 쓸 수 있도록)
     manifest = [{k: v for k, v in c.items() if not k.startswith("_")} for c in cards]
