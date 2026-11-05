@@ -25,6 +25,8 @@
     --hero-ink: #ffffff;
     --hero-sub: rgba(255,255,255,.68);
     --chip-bg: rgba(255,255,255,.14);
+    --kakao: #FEE500;
+    --kakao-ink: #191919;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -72,15 +74,12 @@
   }
 
   .hero {
-    display: block;
-    text-decoration: none;
     background: var(--hero-bg);
     color: var(--hero-ink);
     border-radius: 22px;
     padding: 22px 22px 20px;
-    transition: transform .15s ease;
   }
-  .hero:active { transform: scale(.985); }
+  .hero-link { display: block; color: inherit; text-decoration: none; }
   .chip {
     display: inline-block;
     font-size: 13px;
@@ -100,17 +99,30 @@
     font-size: 15px;
     color: var(--hero-sub);
   }
-  .hero-cta {
-    display: inline-flex;
-    gap: 6px;
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 18px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    font: inherit;
     font-size: 15px;
     font-weight: 700;
-    padding: 11px 18px;
+    padding: 0 18px;
     border-radius: 12px;
-    background: var(--accent);
-    color: var(--accent-ink);
+    border: 0;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform .15s ease;
   }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-kakao { background: var(--kakao); color: var(--kakao-ink); }
 
   .empty {
     background: var(--surface);
@@ -146,7 +158,10 @@
     overflow: hidden;
   }
   .month li + li { border-top: 1px solid var(--line); }
+  .month li { display: flex; align-items: center; }
   .month a {
+    flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -178,7 +193,20 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
-  .arrow { color: var(--ink-2); font-size: 20px; }
+  .share-mini {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    margin-right: 12px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: var(--kakao);
+    color: var(--kakao-ink);
+    cursor: pointer;
+  }
+  .share-mini:active { transform: scale(.92); }
   .muted { color: var(--ink-2); font-size: 14px; margin: 0 4px; }
 
   footer {
@@ -205,5 +233,7 @@
 
   <footer>총 {{COUNT}}건 · 마지막 업데이트 {{UPDATED}}</footer>
 </main>
+<script src="assets/config.js"></script>
+<script src="assets/share.js"></script>
 </body>
 </html>
