@@ -10,21 +10,28 @@
 <meta name="robots" content="noindex, nofollow">
 <!--
   홈 화면 = 오늘의 카드뉴스.
-  가장 최근 카드뉴스가 맨 위에 그대로 보이고, 스크롤을 내리면 지난 카드뉴스가 날짜순으로 이어집니다.
+  가장 최근 카드뉴스가 맨 위에 그대로 보이고, 맨 아래에 지난 카드뉴스 목록(링크)이 한 줄씩 나옵니다.
   아래 FEED 자리는 배포할 때 자동으로 채워집니다.
 -->
 <style>
-  :root { --bg: #e6ebee; --ink: #5b6169; --line: rgba(0,0,0,.08); }
-  @media (prefers-color-scheme: dark) { :root { --bg: #15171a; --ink: #9aa0a8; --line: rgba(255,255,255,.08); } }
+  :root { --bg: #e6ebee; --ink: #5b6169; --text: #1e2329; --line: rgba(0,0,0,.1); --hover: rgba(0,0,0,.04); }
+  @media (prefers-color-scheme: dark) { :root { --bg: #15171a; --ink: #9aa0a8; --text: #e8eaed; --line: rgba(255,255,255,.1); --hover: rgba(255,255,255,.05); } }
   html, body { margin: 0; background: var(--bg); }
   .card-frame { display: block; width: 100%; height: 100vh; height: 100svh; border: 0; }
-  .divider {
-    display: flex; align-items: center; gap: 12px;
-    padding: 22px 16px;
-    color: var(--ink);
-    font: 600 14px/1 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  .archive {
+    max-width: 640px; margin: 0 auto; padding: 28px 16px calc(96px + env(safe-area-inset-bottom));
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   }
-  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .archive h2 { margin: 0 0 8px; font-size: 15px; font-weight: 700; color: var(--ink); }
+  .archive ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .archive li { border-bottom: 1px solid var(--line); }
+  .archive a {
+    display: flex; gap: 12px; align-items: baseline; padding: 14px 2px;
+    color: var(--text); text-decoration: none; font-size: 15px; line-height: 1.4;
+  }
+  .archive a:active, .archive a:hover { background: var(--hover); }
+  .archive .d { flex: none; color: var(--ink); font-size: 13px; font-weight: 600; min-width: 92px; }
+  .archive .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .empty { padding: 40vh 16px; text-align: center; color: var(--ink); font: 15px/1.5 sans-serif; }
   .fab {
     position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 10;
@@ -39,11 +46,9 @@
 <body>
 {{FEED}}
 <script>
-  // 카드뉴스 높이에 맞춰 칸 크기를 자동으로 맞추고,
-  // 지금 화면에 보이는 카드뉴스를 공유 버튼이 보내도록 연결
+  // 카드뉴스 높이에 맞춰 칸 크기를 자동으로 맞춤
   (function () {
     var frames = Array.prototype.slice.call(document.querySelectorAll(".card-frame"));
-    var fab = document.querySelector(".fab");
 
     function fit(f) {
       try {
@@ -64,17 +69,6 @@
     });
     window.addEventListener("resize", function () { frames.forEach(fit); });
 
-    if (fab && "IntersectionObserver" in window) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (en.isIntersecting) {
-            fab.setAttribute("data-share", en.target.getAttribute("data-url"));
-            fab.setAttribute("data-title", en.target.getAttribute("title"));
-          }
-        });
-      }, { rootMargin: "-45% 0px -45% 0px" });
-      frames.forEach(function (f) { io.observe(f); });
-    }
   })();
 </script>
 <script src="assets/config.js"></script>

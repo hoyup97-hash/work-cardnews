@@ -111,6 +111,7 @@ def collect_cards():
             title = f"{day.month}월 {day.day}일 카드뉴스"
         dm = OG_DESC_RE.search(text)
         desc = html.unescape(dm.group(1)).strip() if dm else ""
+        headline = first_headline(text)
         cards.append(
             {
                 "file": path.name,
@@ -119,6 +120,7 @@ def collect_cards():
                 "seq": int(seq) if seq else 1,
                 "title": title,
                 "description": desc,
+                "headline": headline,
                 "_day": day,
             }
         )
@@ -139,19 +141,46 @@ def add_base_target(text: str) -> str:
     return text[: m.end()] + tag + text[m.end():] if m else tag + text
 
 
+def first_headline(text: str) -> str:
+    """카드 1면의 첫 번째 헤드라인 (지난 카드 목록에 표시)"""
+    m = re.search(r'<ol[^>]*class="heads"[^>]*>(.*?)</ol>', text, re.IGNORECASE | re.DOTALL)
+    if not m:
+        return ""
+    li = re.search(r"<li[^>]*>(.*?)</li>", m.group(1), re.IGNORECASE | re.DOTALL)
+    if not li:
+        return ""
+    body = re.sub(r'<span class="n">.*?</span>', "", li.group(1), flags=re.DOTALL)
+    body = re.sub(r"<[^>]+>", "", body)
+    return html.unescape(re.sub(r"\s+", " ", body)).strip()
+
+
 def render_feed(cards) -> str:
+    """홈 화면: 맨 위에 오늘(가장 최근) 카드, 맨 아래에 지난 카드 목록"""
     if not cards:
         return '<p class="empty">아직 올라온 카드뉴스가 없어요.</p>'
-    parts = []
-    for i, c in enumerate(cards):
-        if i > 0:
-            parts.append(f'<div class="divider">{day_label(c["_day"])}</div>')
-        parts.append(
-            f'<iframe class="card-frame" src="embed/{html.escape(c["file"])}" '
-            f'data-url="{html.escape(c["url"])}" title="{html.escape(c["title"])}" '
-            f'loading="{"eager" if i == 0 else "lazy"}"></iframe>'
-        )
     first = cards[0]
+    parts = [
+        f'<iframe class="card-frame" src="embed/{html.escape(first["file"])}" '
+        f'title="{html.escape(first["title"])}" loading="eager"></iframe>'
+    ]
+    past = cards[1:]
+    if past:
+        rows = []
+        for c in past:
+            label = day_label(c["_day"])
+            if c["seq"] > 1:
+                label += f' #{c["seq"]}'
+            text = c["headline"] or c["title"]
+            rows.append(
+                f'<li><a href="{html.escape(c["url"])}">'
+                f'<span class="d">{label}</span>'
+                f'<span class="t">{html.escape(text)}</span></a></li>'
+            )
+        parts.append(
+            '<section class="archive"><h2>지난 카드뉴스</h2><ul>'
+            + "".join(rows)
+            + "</ul></section>"
+        )
     parts.append(
         f'<button type="button" class="fab" data-share="{html.escape(first["url"])}" '
         f'data-title="{html.escape(first["title"])}" aria-label="카카오톡으로 공유">{_KAKAO_SVG}공유</button>'
