@@ -43,6 +43,7 @@
 - 한 번 커밋한 파일은 지워도 기록(History)에 남습니다.
   파일 이름, 커밋 메시지, 내용에 외부에 나가면 안 되는 정보를 넣지 마세요.
 - 검색엔진에는 노출되지 않도록 설정되어 있습니다(noindex). 다만 비공개는 아닙니다.
+- 유앤아이(Youandi) 폰트는 현대카드 계열 전용 서체라 이 공개 저장소에 올리지 않습니다. 카드는 Pretendard 글꼴을 씁니다.
 
 ## 5. 카카오톡 공유 버튼
 
@@ -66,6 +67,9 @@ assets/                   ← 공유 버튼 스크립트(share.js), 대표 썸�
 config.json               ← 카카오 키 등 설정
 index.template.html       ← 홈 화면 틀 (카드뉴스는 자동으로 채워짐)
 scripts/build.py          ← 목록을 자동으로 만드는 스크립트
+AUTOMATION.md             ← Claude가 카드를 올릴 때 따르는 발행 규칙
+SETUP.md                  ← 새 담당자 세팅 (처음 한 번)
+cardnews-site/SKILL.md    ← 각자 Claude 계정에 추가하는 운영 스킬
 .github/workflows/        ← 자동 배포 설정
 ```
 
