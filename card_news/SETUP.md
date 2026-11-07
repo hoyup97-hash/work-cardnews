@@ -14,14 +14,14 @@
 - github.com → Settings → Applications → Claude 에서 저장소 접근이 **Only select repositories → work-cardnews** 로 돼 있는지 확인합니다(다른 저장소까지 열어 둘 필요 없음).
 - Organization으로 옮긴 뒤에는 Organization 관리자가 Claude 앱 설치를 승인해야 할 수 있습니다.
 
-## 3. 스킬 두 개 추가 (claude.ai 계정)
-- **fubon-news-newspaper**: 카드 내용(기사 고르기·3줄 요약)을 정하는 스킬. 만든 동료에게 공유받아 추가합니다.
+## 3. 스킬 세 개 추가 (claude.ai 계정)
+- **fubon-news-newspaper**, **fubon-news-onepage**: 카드 내용(기사 고르기·요약)과 두 보기 방식(신문형·한 장 요약)을 정하는 스킬. 만든 동료에게 공유받아 추가합니다.
 - **cardnews-site**: 사이트에 올리기·예약·확인·수정을 맡는 스킬. 이 저장소의 `card_news/cardnews-site/SKILL.md` 를 받아 스킬로 추가합니다(또는 관리자에게 공유받기).
 
 ## 4. 동작 확인
 - Claude에서 웹 검색이 켜져 있는지 확인합니다.
 - 새 채팅에 **"카드뉴스 시험 모드로 하나 만들어줘"** 라고 보냅니다.
-  - HTML 파일이 오면 세팅 완료입니다(사이트에는 올라가지 않음).
+  - HTML 파일 두 개(신문형·한 장 요약)가 오면 세팅 완료입니다(사이트에는 올라가지 않음).
   - 막히면 Claude가 어디서 막혔는지 알려줍니다. 대부분 1~3번 중 빠진 것입니다.
 
 ## 5. 매일 자동 발행을 맡는 경우

@@ -1,6 +1,6 @@
 ---
 name: cardnews-site
-description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에 카드뉴스를 올리기·미리보기·발행 예약·배포 확인·수정할 때, 그리고 사이트 구조·디자인(홈 화면, 목록, 버튼, 카드 모양)을 바꿀 때 사용. "카드뉴스 올려줘", "카드뉴스 시험으로 만들어줘", "카드뉴스 예약", "카드뉴스 배포됐어?", "카드뉴스 고쳐줘", "카드뉴스 사이트 홈 화면 바꿔줘" 등. 카드 내용은 fubon-news-newspaper 스킬과 함께 쓴다.
+description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에 카드뉴스를 올리기·미리보기·발행 예약·배포 확인·수정할 때, 그리고 사이트 구조·디자인(홈 화면, 목록, 버튼, 카드 모양)을 바꿀 때 사용. "카드뉴스 올려줘", "카드뉴스 시험으로 만들어줘", "카드뉴스 예약", "카드뉴스 배포됐어?", "카드뉴스 고쳐줘", "카드뉴스 사이트 홈 화면 바꿔줘" 등. 카드 내용은 fubon-news-newspaper·fubon-news-onepage 스킬과 함께 쓴다.
 ---
 
 # 팀 카드뉴스 사이트 운영
@@ -10,11 +10,11 @@ description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에
 ## 기본 정보 (바뀌면 여기만 고친다)
 - 저장소: `hoyup97-hash/work-cardnews` (GitHub 공개 저장소). 팀 Organization으로 옮기면 owner가 바뀐다.
 - 사이트: https://hoyup97-hash.github.io/work-cardnews/
-- 카드 폴더: `card_news/cards/`
+- 카드 폴더: `card_news/cards/` — 하루에 하나, 같은 기사로 두 보기 방식: `YYYY-MM-DD.newspaper.html`(신문형), `YYYY-MM-DD.onepage.html`(한 장 요약). 사이트에서는 위쪽 버튼으로 둘을 오가고, 처음 온 사람에게는 무작위로 하나가 보인다.
 - 세부 규칙: `card_news/AUTOMATION.md` — 파일 이름, 템플릿, 검증, 커밋, 보고. **이 스킬과 다르면 저장소 파일이 최신이니 그쪽을 따른다.**
 - 새 담당자 세팅: `card_news/SETUP.md`
 - 사이트 구조·디자인 바꾸기: `card_news/CUSTOMIZE.md`
-- 카드 내용(기사 수집·선정·3줄 요약·검수): **fubon-news-newspaper** 스킬. 각자 계정에 추가돼 있어야 한다.
+- 카드 내용(기사 수집·선정·요약·검수)과 모양: **fubon-news-newspaper**(신문형), **fubon-news-onepage**(한 장 요약) 스킬. 둘 다 각자 계정에 추가돼 있어야 한다. 기사 조사·선정은 한 번만 하고 같은 기사로 두 파일을 만든다.
 
 ## 시작할 때 항상
 1. **저장소 준비.** 세션에 이미 clone돼 있으면 `git pull`. 없으면 `add_repo`(owner=`hoyup97-hash`, repo=`work-cardnews`, access=`push`, 확인·미리보기만이면 `read`)로 붙이고 안내대로 clone한다. 공개 저장소라 읽기만 할 때는 `git clone https://github.com/hoyup97-hash/work-cardnews` 도 된다.
@@ -28,9 +28,9 @@ description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에
    - 홈 화면·목록·버튼·카드 디자인 등 사이트 자체를 바꾸기 → F 사이트 수정
 
 ## A. 시험 모드 (올리지 않고 결과만 보여주기)
-1. AUTOMATION.md 1~4번(파일 이름 정하기, 템플릿, fubon-news-newspaper로 내용 작성, 검증)을 그대로 한다.
-2. 커밋·푸시는 하지 않는다. 만든 HTML을 작업 폴더에 저장해 사용자에게 파일로 보낸다(SendUserFile).
-3. 보고: 올렸다면 붙었을 파일 이름, 헤드라인, 다시 봐야 할 부분. 마지막에 "이대로 올릴까요?"라고 묻고, 사용자가 원하면 그 파일로 B의 5~7번만 이어서 한다.
+1. AUTOMATION.md 1~4번(파일 이름 정하기, 템플릿, 두 스킬로 내용 작성, 검증)을 그대로 한다.
+2. 커밋·푸시는 하지 않는다. 만든 HTML 두 개(신문형·한 장 요약)를 작업 폴더에 저장해 사용자에게 파일로 보낸다(SendUserFile).
+3. 보고: 올렸다면 붙었을 파일 이름(두 개), 헤드라인, 다시 봐야 할 부분. 마지막에 "이대로 올릴까요?"라고 묻고, 사용자가 원하면 그 파일로 B의 5~7번만 이어서 한다.
 
 ## B. 발행 (사이트에 올리기)
 - AUTOMATION.md 1~7번을 그대로 한다(커밋·푸시·배포 확인·보고 포함).
@@ -44,20 +44,21 @@ description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에
 ```
 [카드뉴스 발행 — {회차 설명, 예: 평일 아침 정기 / 11/10 07:30 1회}]
 1) hoyup97-hash/work-cardnews 저장소를 준비합니다. 세션에 이미 있으면 pull, 없으면 add_repo(owner=hoyup97-hash, repo=work-cardnews, access=push)로 붙이고 clone 합니다.
-2) card_news/AUTOMATION.md 를 읽고 그 규칙대로 카드뉴스 1개를 만들어 커밋·푸시하고, 배포를 확인한 뒤 보고합니다. 카드 내용은 fubon-news-newspaper 스킬을 따릅니다.
-3) 이번 회차: {같은 날 여러 개 허용 / 같은 날 파일이 있으면 만들지 않음}. {시험이면: 커밋 메시지 끝에 "(시험)"}.
+2) card_news/AUTOMATION.md 를 읽고 그 규칙대로 그날 카드뉴스(신문형·한 장 요약 두 파일)를 만들어 커밋·푸시하고, 배포를 확인한 뒤 보고합니다. 카드 내용은 fubon-news-newspaper·fubon-news-onepage 스킬을 따릅니다.
+3) 이번 회차: 발행일은 실행일(한국시간). 그날 파일이 이미 있으면 만들지 않고 보고만 합니다. {시험이면: 커밋 메시지 끝에 "(시험)"}.
 4) 어느 단계든 권한·네트워크·스킬 문제로 막히면, 어떤 도구가 어떤 메시지로 막혔는지 정확히 적어 보고하고 끝냅니다. 사람에게 묻지 않습니다.
 ```
 
 4. 만든 뒤 사용자에게 알린다: 언제 실행되는지, 결과는 그 실행 기록(예약 작업 화면)에서 본다는 것, 단톡방 공유는 사람이 한다는 것. 결과에 승인 설정이 "자동"이 아니면, 무인 실행 중 승인 대기로 멈출 수 있으니 예약 작업 설정에서 자동 승인을 켜 달라고 한다.
 
 ## D. 확인 (잘 올라갔는지)
-- `git log -5 --oneline`, `card_news/cards/` 목록, https://hoyup97-hash.github.io/work-cardnews/manifest.json?t=현재시각 맨 위 항목을 본다.
+- `git log -5 --oneline`, `card_news/cards/` 목록, https://hoyup97-hash.github.io/work-cardnews/manifest.json?t=현재시각 맨 위 항목(`date`, `variants` 에 newspaper·onepage 둘 다 있는지)을 본다.
 - 예약 실행에 대한 질문이면 `list_triggers`(include_completed=true)로 해당 예약의 마지막 실행 상태와 시각을 본다. 실행은 됐는데 커밋이 없으면, 그 실행 세션에서 막힌 이유를 사용자에게 확인해 달라고 한다.
 - 결과를 짧게 보고한다: 최근 카드 파일 이름·날짜, 사이트 반영 여부, 문제가 있으면 원인 추정.
 
 ## E. 수정 (이미 올라간 카드 고치기)
-- 사용자가 지목한 카드 파일 하나만 고친다. 다른 카드·설정 파일은 건드리지 않는다.
+- 사용자가 지목한 날짜의 카드만 고친다. 내용(숫자·문장)이 틀린 것이면 두 보기 방식 파일을 함께 고친다. 다른 날짜 카드·설정 파일은 건드리지 않는다.
+- "그날 카드 다시 만들어줘"처럼 재작성을 요청하면, 그 날짜 기준 수집 기간(AUTOMATION.md 3번)으로 다시 조사해 두 파일을 새로 쓴다.
 - 고친 부분은 원문을 다시 열어 대조한다. AUTOMATION.md 4번(검증)을 거친 뒤 커밋 메시지 "M/D 카드뉴스 수정: {무엇을}"으로 푸시하고, 6번(배포 확인)을 한다.
 - 지난 기록(GitHub History)에는 고치기 전 내용이 남는다는 점을 알려준다.
 
@@ -80,7 +81,7 @@ description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에
 |---|---|---|
 | add_repo가 권한·연결 오류 | claude.ai에 GitHub 미연결 또는 저장소 접근 미허용 | SETUP.md 2번 (GitHub 연결, work-cardnews 접근 허용) |
 | push가 403 | GitHub 계정에 저장소 쓰기 권한 없음 | 관리자에게 저장소 쓰기 권한(Collaborator 또는 Organization 멤버) 요청 |
-| fubon-news-newspaper를 쓸 수 없음 | 계정에 스킬 미추가 | 동료에게 스킬을 공유받아 계정에 추가. 그 전에는 카드를 만들지 않는다 |
+| fubon-news-newspaper / fubon-news-onepage를 쓸 수 없음 | 계정에 스킬 미추가 | 동료에게 두 스킬을 공유받아 계정에 추가. 그 전에는 카드를 만들지 않는다 |
 | 핵심 기사 0건 | 주말·공휴일·이른 시각 | 정상. 만들지 않고 보고 |
 | 예약 실행이 승인 대기로 멈춤 | 예약 작업 승인 설정 | 예약 작업 설정에서 자동 승인 켜기 |
 | 배포 후 사이트에 안 보임 | Actions 실패 또는 캐시 | 저장소 Actions 탭 확인(빨간 X면 실패 로그), 1~2분 뒤 새로고침 |

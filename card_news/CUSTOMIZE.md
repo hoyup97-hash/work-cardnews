@@ -26,26 +26,28 @@
 ## 무엇을 고치면 어디가 바뀌나
 | 바꾸고 싶은 것 | 파일 |
 |---|---|
-| 홈 화면 모양, 지난 카드 목록 | `card_news/index.template.html` (틀), `card_news/scripts/build.py` (목록 채우는 방식) |
-| 카드 아래 "전체 목록 / 공유" 버튼 모양 | `card_news/scripts/build.py` 의 `nav_snippet` |
+| 보기 화면(위쪽 날짜·전환 버튼·공유, 아래 '지난 카드뉴스' 걸침) 모양 | `card_news/index.template.html` (홈과 날짜 주소가 같은 틀) |
+| 무작위로 보여주는 방식, 전환 동작 | `card_news/index.template.html` 아래쪽 `<script>` (`pick`, `show`) |
+| 보기 방식 종류·버튼 이름, 지난 목록 채우는 방식 | `card_news/scripts/build.py` 의 `VARIANTS`, `render_page` |
 | 공유 버튼 동작(카톡 공유) | `card_news/assets/share.js`, 카카오 키는 `card_news/config.json` |
 | 카톡 미리보기 제목·설명 | `card_news/index.template.html` 의 og 태그 |
-| 카드 디자인(5장 신문 모양, 색, 글씨) | 아래 '카드 디자인 바꾸기' |
+| 카드 디자인(신문형 5장 / 한 장 요약 2장) | 아래 '카드 디자인 바꾸기' |
 | Claude가 카드를 올릴 때 지키는 규칙 | `card_news/AUTOMATION.md` |
 | 자동 배포 방식 | `.github/workflows/deploy.yml` (웬만하면 건드리지 않음) |
 
 ## 카드 디자인 바꾸기
-- Claude는 새 카드를 만들 때 **`card_news/cards/` 의 가장 최근 카드를 복사해서** 내용만 바꿉니다. 그래서 새 디자인을 적용하려면 **새 디자인으로 만든 카드 하나를 올리면** 다음 회차부터 그 모양을 따라갑니다. 지난 카드는 바꿀 필요 없습니다.
-- 동료의 카드뉴스 스킬(fubon-news-newspaper) 안에 있는 템플릿만 바꾸면 사이트 카드에는 반영되지 않습니다. 디자인을 바꾸면 스킬을 만든 동료에게도 알려 서로 맞춥니다.
+- Claude는 새 카드를 만들 때 **`card_news/cards/` 의 가장 최근 `*.newspaper.html` / `*.onepage.html` 을 복사해서** 내용만 바꿉니다. 그래서 새 디자인을 적용하려면 **새 디자인으로 만든 카드를 올리면** 다음 회차부터 그 모양을 따라갑니다. 지난 카드는 바꿀 필요 없습니다.
+- 동료의 카드뉴스 스킬(fubon-news-newspaper, fubon-news-onepage) 안에 있는 템플릿만 바꾸면 사이트 카드에는 반영되지 않습니다. 디자인을 바꾸면 스킬을 만든 동료에게도 알려 서로 맞춥니다.
+- 세 번째 보기 방식을 추가하려면 `build.py` 의 `VARIANTS` 에 이름을 더하고, 그 이름으로 파일(`YYYY-MM-DD.<이름>.html`)을 올립니다.
 - 새 디자인에서도 지킬 것:
   - 파일 하나에 모두 담기(HTML 안에 스타일·스크립트). 글꼴은 Pretendard 링크만.
   - `<title>` 유지 (홈 화면 목록·카톡 미리보기에 쓰임).
-  - 1면 헤드라인을 `<ol class="heads"><li>…</li></ol>` 로 유지 (지난 카드 목록에 첫 헤드라인이 뜸). 바꾸려면 `build.py` 의 `first_headline` 도 같이 고칩니다.
+  - 신문형 1면 헤드라인 `<ol class="heads"><li>…</li></ol>`, 한 장 요약 기사 제목 `<li class="story">…<h2>` 구조 유지 (지난 카드 목록에 첫 헤드라인이 뜸). 바꾸려면 `build.py` 의 `first_headline` 도 같이 고칩니다.
   - 장 구성(1면 / 기사 3장 / 더 읽어볼 기사)이 바뀌면 `AUTOMATION.md` 2번도 같이 고칩니다.
   - 휴대폰 폭(390px)에서 한 장이 넘치지 않는지 확인.
 
 ## 조심할 것
-- **파일 이름 규칙**(`YYYY-MM-DD.html`, `-2`)은 `build.py`, `AUTOMATION.md`, `SETUP.md`, cardnews-site 스킬이 모두 기대고 있습니다. 바꾸려면 넷을 함께 고칩니다.
+- **파일 이름 규칙**(`YYYY-MM-DD.newspaper.html`, `YYYY-MM-DD.onepage.html`)은 `build.py`, `AUTOMATION.md`, `SETUP.md`, cardnews-site 스킬이 모두 기대고 있습니다. 바꾸려면 넷을 함께 고칩니다.
 - `.github/workflows/deploy.yml` 이 잘못되면 배포가 멈춥니다. 고쳐야 하면 Claude에게 이유를 설명하고 맡깁니다.
 - 한 번 올린 내용은 지워도 GitHub 기록(History)에 남습니다.
 

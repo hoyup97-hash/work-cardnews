@@ -71,88 +71,72 @@ body{font-family:var(--font);color:var(--ink);letter-spacing:-.015em;word-break:
 :root[data-theme="dark"] .dot{background:rgba(255,255,255,.3)}
 @media (max-width:380px){.nameplate{font-size:1.7rem}.heads li{font-size:1.15rem}.three li{font-size:.88rem}}
 @media (prefers-reduced-motion:reduce){.deck{scroll-behavior:auto}}
-
-@page{size:380px 540px;margin:0}
-@media print{
-  html,body{background:#F7F6F2!important;background-image:none!important;padding:0!important;margin:0}
-  .deck-wrap{max-width:none}
-  .deck{display:block;overflow:visible;padding:0!important;gap:0}
-  .sheet{width:380px;height:540px;aspect-ratio:auto;box-shadow:none;page-break-after:always;break-after:page;padding:20px 20px 16px}
-  .sheet:last-child{page-break-after:auto;break-after:auto}
-  .nav{display:none}
-  .three{gap:7px}.three li{font-size:.86rem;line-height:1.55}.art h2{font-size:1.06rem}
-  .heads li,.art h2,.more a,.nameplate,.dateline,.num,.label{-webkit-text-stroke:.45px currentColor}
-  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-}
 </style>
-
 </head><body>
+
 <div class="deck-wrap">
   <div class="deck" id="deck" tabindex="0" aria-label="영업혁신실 신문 슬라이드">
-
     <section class="sheet" aria-label="1면">
       <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>푸본현대생명</span></div>
-      <div class="dateline">11월 6일(금)</div>
+      <div class="dateline">11월 4일(수)</div>
       <div class="nameplate">보험 영업 신문</div>
       <ol class="heads">
-        <li><span class="n">1.</span><span>700종신 빠진 11월 생보 GA시책… 통합건강 <span class="circ">2,056%</span> 강세, 대체 종신은 약세</span></li>
-        <li><span class="n">2.</span><span>GA 판매책임 강화… <span class="ul">추천 근거·상담기록</span> 현장 안착이 관건</span></li>
-        <li><span class="n">3.</span><span>수수료 분급 시대, GA <span class="ul">‘위촉계약’ 다시 써야</span></span></li>
+        <li><span class="n">1.</span><span>“700종신 빠지자 실적 희비 교차”… 동양생명 <span class="circ">82.8%</span> 급감, 라이나생명 72% 급증</span></li>
+        <li><span class="n">2.</span><span>동양생명, 납입 완료 후 <span class="ul">치료보장</span>…사망보험금 2배</span></li>
+        <li><span class="n">3.</span><span>대리서명 제재 이어지는데…GA <span class="ul">디지털 모집관리</span> 시험대</span></li>
       </ol>
-      <div class="foot"><span>GA 6 · FP 0 · BA 0 · TM 0</span><span>다음 장에서 3줄 요약 →</span></div>
+      <div class="foot"><span>GA 3 · FP 0 · BA 0 · TM 0</span><span>다음 장에서 3줄 요약 →</span></div>
     </section>
 
     <section class="sheet art" aria-label="1번 기사">
-      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 6일(금)</span></div>
-      <div class="art-top"><span class="num">1</span><span class="tag">GA</span><span class="tag">영업전략</span><span class="src">보험저널 11.04</span></div>
-      <h2>[11월 생보GA시책] “700종신 빠진 시책 새판짜기”… 통합건강·단기납종신·경영인정기 강세, 대체 종신 약세</h2>
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 4일(수)</span></div>
+      <div class="art-top"><span class="num">1</span><span class="tag">GA</span><span class="tag">영업전략</span><span class="src">보험저널 11.03</span></div>
+      <h2>[26년 10월 생보 GA채널] “700종신 빠지자 실적 희비 교차”… 동양생명 82.8% 급감, 라이나생명 72% 급증</h2>
       <div class="label">3줄 요약</div>
       <ol class="three">
-        <li><span>700종신 대체상품인 건강종신·인출형종신의 11월 평균 시책률은 715%로, 9월 700종신(905%)보다 21.0% 낮은 수준임.</span></li>
-        <li><span>통합건강보험은 9월 2,014%에서 11월 2,056%로 2,000%대를 유지했고, 단기납종신 7년납은 466%→498%, 경영인정기는 249%→297%로 오름.</span></li>
-        <li><span>11월 통합건강보험 시책률은 KB라이프 2,850%, 라이나생명 2,800%, DB생명 2,783% 순이며, 13차월 특별시책과 2027년 유지관리수수료는 구분해 봐야 함.</span></li>
+        <li><span>10월 생보사 GA채널 판매실적은 439.9억원으로 전월(596.6억원)보다 26.3% 감소했으며, 9월 막판 판매가 몰렸던 700종신의 판매중단 영향임.</span></li>
+        <li><span>동양생명이 82.8% 급감해 1위에서 11위로 밀렸고, 동양·신한라이프·한화생명 3개사 감소액이 전체 순감소액의 74.4%. 푸본현대생명도 42.9% 감소.</span></li>
+        <li><span>라이나생명은 72.0% 늘며 13위에서 4위로 올라섰고, 2027년 4년 분급제를 앞두고 대체상품 확보와 수수료 경쟁력이 GA채널 실적을 좌우할 변수라는 분석.</span></li>
       </ol>
-      <div class="foot"><span>2/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33769">원문 보기 →</a></div>
+      <div class="foot"><span>2/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33760">원문 보기 →</a></div>
     </section>
 
     <section class="sheet art" aria-label="2번 기사">
-      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 6일(금)</span></div>
-      <div class="art-top"><span class="num">2</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">보험매일 11.05</span></div>
-      <h2>GA 판매책임 강화, 현장 안착이 관건…협회 역할 주목</h2>
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 4일(수)</span></div>
+      <div class="art-top"><span class="num">2</span><span class="tag">전 채널</span><span class="tag">상품</span><span class="src">보험매일 11.03</span></div>
+      <h2>동양생명, 납입 완료 후 치료보장…사망보험금 2배</h2>
       <div class="label">3줄 요약</div>
       <ol class="three">
-        <li><span>3일 열린 ‘보험 모집질서 건전화와 소비자 보호를 위한 정책토론회’에서 비교·추천 근거 검증, 상담기록 보존, 대형 GA 직접 배상책임 강화가 논의됨.</span></li>
-        <li><span>김동겸 보험연구원 연구위원은 판매 권한은 영업조직으로 옮겨갔지만 책임과 규율은 전속모집 체계에 머물러 있다고 진단함.</span></li>
-        <li><span>8월 20일 국회를 통과한 보험업법 개정은 내년 3월 9일 시행되며, GA협회는 18일 광고심의 교육, 20일 보험판매전문회사 입법토론회를 엶.</span></li>
+        <li><span>동양생명이 사망보장에 보험료 납입면제와 납입 완료 후 치료 보장을 더한 ‘(무)우리WON하는건강플러스종신보험’을 지난달 30일 출시함.</span></li>
+        <li><span>10년 납입기간 중 암(소액암 제외) 또는 뇌출혈·급성심근경색증 진단 시 납입을 면제하고, 납입을 마치면 암·특정순환계질환 핵심치료를 100세까지 보장(최대 1억원).</span></li>
+        <li><span>사망보험금은 가입 5년 이후 5년간 매년 가입금액의 20%씩 늘어 최대 200%까지 체증되며, UL종신이나 연금으로 전환할 수 있음.</span></li>
       </ol>
-      <div class="foot"><span>3/5</span><a class="go" href="https://www.fins.co.kr/news/articleView.html?idxno=110424">원문 보기 →</a></div>
+      <div class="foot"><span>3/5</span><a class="go" href="https://www.fins.co.kr/news/articleView.html?idxno=110387">원문 보기 →</a></div>
     </section>
 
     <section class="sheet art" aria-label="3번 기사">
-      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 6일(금)</span></div>
-      <div class="art-top"><span class="num">3</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">보험저널 11.04</span></div>
-      <h2>[기획칼럼] ①수수료 분급제시대...‘위촉계약’을 다시 쓰라</h2>
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 4일(수)</span></div>
+      <div class="art-top"><span class="num">3</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">보험매일 11.04</span></div>
+      <h2>대리서명 제재 이어지는데…GA 디지털 모집관리 시험대</h2>
       <div class="label">3줄 요약</div>
       <ol class="three">
-        <li><span>2027년 1월부터 수수료가 2027~2028년 최대 4년, 2029년부터 최대 7년으로 분급돼 선지급 위주로 짜인 기존 위촉계약의 해촉 후 수수료 조항이 맞지 않게 됨.</span></li>
-        <li><span>대법원은 2025년 9월 잔여수수료 전부를 모집의 대가로 본 원심을 파기하고, 유지·관리 대가가 포함됐는지 따지라고 판단함.</span></li>
-        <li><span>필자 이홍주 변호사는 수수료 종류·대가 조항, 해촉 정산 조항, 적용 범위를 정하는 경과 조항을 다시 써야 한다고 제시함.</span></li>
+        <li><span>올해 공개된 GA 제재 사례에서도 자필서명을 적정하게 받지 않은 행위가 확인돼 GA에 70만원, 설계사 1명에 80만원 과태료가 부과됨(과거 위반에 대한 제재).</span></li>
+        <li><span>전자청약·AI 영업지원이 확산되는 만큼 GA는 청약 완료 여부뿐 아니라 실제 서명·인증 주체와 고객이 충분히 설명받았는지 함께 점검해야 한다는 지적.</span></li>
+        <li><span>AI 설명자료도 승인본과 실제 배포본을 대조할 체계가 필요하며, 본사가 검증 기준을 마련해 수정·배포 과정까지 관리해야 한다는 업계 의견.</span></li>
       </ol>
-      <div class="foot"><span>4/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33767">원문 보기 →</a></div>
+      <div class="foot"><span>4/5</span><a class="go" href="https://www.fins.co.kr/news/articleView.html?idxno=110402">원문 보기 →</a></div>
     </section>
 
     <section class="sheet" aria-label="이 기사들도 읽어보세요">
-      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 6일(금)</span></div>
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 4일(수)</span></div>
       <h2 class="more-title">이 기사들도 읽어보세요!</h2>
       <ul class="more">
-        <li><a href="https://www.fins.co.kr/news/articleView.html?idxno=110433"><span>금융권 해킹 37개사로 확산…보험사 3곳 뚫렸다<small>GA · 보험매일 11.05</small></span></a></li>
-        <li><a href="https://www.fins.co.kr/news/articleView.html?idxno=110382"><span>설계사 증가에 GA 산재보험료 부담 확대…수수료 분급도 변수<small>GA · 보험매일 11.03</small></span></a></li>
-        <li><a href="https://www.fins.co.kr/news/articleView.html?idxno=110362"><span>수수료 분급 두 달 앞…GA, ‘얼마 받나’보다 ‘언제 받나’<small>GA · 보험매일 11.02</small></span></a></li>
+        <li><a href="https://www.fins.co.kr/news/articleView.html?idxno=110386"><span>처브라이프, 종신보험에 입원·수술·3대질병 보장 강화<small>전 채널 · 보험매일 11.03</small></span></a></li>
+        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33761"><span>GA 검사 대응, 정도영업이 답이다...③&quot;서류만 갖춰선 부족&quot;, 상시 내부통제로 &#x27;취약점&#x27;부터 잡아야<small>GA · 보험저널 11.03</small></span></a></li>
       </ul>
-      <div class="sched"><b>일정</b> 11.18 GA협회 광고심의 교육 · 11.20 보험판매전문회사 국회 입법토론회 · 27.01 판매수수료 4년 분급 시행 · 27.03.09 개정 보험업법 시행</div>
-      <div class="foot"><span>5/5</span><span>11.06 07:00 기준 · 원문 요약</span></div>
+      <div class="sched"><b>일정</b> 11.16 분급 3차 FAQ 설명회 · 11.20 보험판매전문회사 입법토론회</div>
+      <div class="foot"><span>5/5</span><span>11.04 07:30 기준 · 원문 요약</span></div>
     </section>
-
   </div>
   <div class="nav">
     <button class="arrow" id="prev" type="button" aria-label="이전 슬라이드">←</button>
@@ -179,5 +163,4 @@ body{font-family:var(--font);color:var(--ink);letter-spacing:-.015em;word-break:
   sync();
 })();
 </script>
-
 </body></html>

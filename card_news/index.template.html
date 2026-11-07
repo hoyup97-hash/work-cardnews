@@ -9,69 +9,139 @@
 <meta property="og:description" content="{{DESC}}">
 <meta name="robots" content="noindex, nofollow">
 <!--
-  홈 화면 = 오늘의 카드뉴스.
-  가장 최근 카드뉴스가 맨 위에 그대로 보이고, 맨 아래에 지난 카드뉴스 목록(링크)이 한 줄씩 나옵니다.
-  아래 FEED 자리는 배포할 때 자동으로 채워집니다.
+  보기 화면 (홈 = 가장 최근 날짜, cards/YYYY-MM-DD.html = 그날).
+  - 위: 날짜 · 보기 방식 전환(신문형 / 한 장 요약) · 공유
+  - 가운데: 카드뉴스 (처음 들어오면 두 방식 중 하나가 무작위, 같은 창에서는 고른 방식 유지)
+  - 아래: '지난 카드뉴스' 머리가 화면 맨 아래에 살짝 걸쳐 보이고, 내리면 목록이 나옴
+  {{ }} 자리는 배포할 때 scripts/build.py 가 채웁니다.
 -->
 <style>
-  :root { --bg: #e6ebee; --ink: #5b6169; --text: #1e2329; --line: rgba(0,0,0,.1); --hover: rgba(0,0,0,.04); }
-  @media (prefers-color-scheme: dark) { :root { --bg: #15171a; --ink: #9aa0a8; --text: #e8eaed; --line: rgba(255,255,255,.1); --hover: rgba(255,255,255,.05); } }
-  html, body { margin: 0; background: var(--bg); }
-  .card-frame { display: block; width: 100%; height: 100vh; height: 100svh; border: 0; }
-  .archive {
-    max-width: 640px; margin: 0 auto; padding: 28px 16px calc(96px + env(safe-area-inset-bottom));
-    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  :root {
+    --bg: #e6ebee; --bar: rgba(246,248,249,.92); --ink: #5b6169; --text: #1e2329; --line: rgba(0,0,0,.1);
+    --hover: rgba(0,0,0,.04); --sheet: #ffffff; --accent: #0094C2; --seg: rgba(0,0,0,.06);
+    --ui: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Pretendard", sans-serif;
   }
-  .archive h2 { margin: 0 0 8px; font-size: 15px; font-weight: 700; color: var(--ink); }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #15171a; --bar: rgba(28,30,34,.92); --ink: #9aa0a8; --text: #e8eaed; --line: rgba(255,255,255,.1);
+            --hover: rgba(255,255,255,.05); --sheet: #202328; --seg: rgba(255,255,255,.08); }
+  }
+  html, body { margin: 0; background: var(--bg); }
+  body { font-family: var(--ui); color: var(--text); }
+
+  /* 위쪽 막대 */
+  .bar {
+    display: flex; align-items: center; gap: 8px; max-width: 640px; margin: 0 auto;
+    padding: calc(10px + env(safe-area-inset-top)) 14px 6px;
+  }
+  .bar .day { font-size: 15px; font-weight: 700; white-space: nowrap; }
+  .bar .home { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-left: -6px; border-radius: 50%;
+               color: var(--text); text-decoration: none; font-size: 26px; line-height: 1; }
+  .bar .home:hover { background: var(--hover); }
+  .bar .sp { flex: 1; }
+  .seg { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--seg); }
+  .seg button {
+    border: 0; background: transparent; color: var(--ink); cursor: pointer; white-space: nowrap;
+    font: 600 13px/1 var(--ui); padding: 8px 11px; border-radius: 999px;
+  }
+  .seg button[aria-pressed="true"] { background: var(--sheet); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+  .share {
+    display: inline-flex; align-items: center; gap: 4px; border: 0; cursor: pointer; white-space: nowrap;
+    padding: 8px 11px; border-radius: 999px; background: #FEE500; color: #191919; font: 700 13px/1 var(--ui);
+  }
+  @media (max-width: 360px) { .share span { display: none; } .seg button { padding: 8px 9px; } }
+  .seg button:focus-visible, .share:focus-visible, .peek:focus-visible, .archive a:focus-visible, .home:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+
+  /* 카드뉴스 */
+  .card-frame { display: block; width: 100%; height: 70vh; border: 0; }
+
+  /* 화면 맨 아래에 걸쳐 보이는 '지난 카드뉴스' 머리 */
+  .peek {
+    position: sticky; bottom: 0; z-index: 5; display: grid; grid-template-columns: 1fr auto; align-items: center;
+    max-width: 640px; margin: 8px auto 0; box-sizing: border-box;
+    padding: 16px 18px calc(10px + env(safe-area-inset-bottom)); border-radius: 18px 18px 0 0;
+    background: var(--sheet); color: var(--text); text-decoration: none;
+    box-shadow: 0 -6px 18px rgba(0,0,0,.12);
+  }
+  .peek .grab { position: absolute; top: 7px; left: 50%; width: 36px; height: 4px; margin-left: -18px; border-radius: 4px; background: var(--line); }
+  .peek .ph { font-size: 15px; font-weight: 700; }
+  .peek .pc { grid-column: 1; font-size: 12.5px; color: var(--ink); margin-top: 3px; }
+  .peek .chev { grid-row: 1 / span 2; grid-column: 2; font-size: 22px; color: var(--ink); line-height: 1; }
+
+  .archive {
+    max-width: 640px; margin: 0 auto; box-sizing: border-box; background: var(--sheet);
+    padding: 0 16px calc(40px + env(safe-area-inset-bottom)); min-height: 40vh;
+  }
   .archive ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
   .archive li { border-bottom: 1px solid var(--line); }
-  .archive a {
-    display: flex; gap: 12px; align-items: baseline; padding: 14px 2px;
-    color: var(--text); text-decoration: none; font-size: 15px; line-height: 1.4;
-  }
+  .archive a { display: flex; gap: 12px; align-items: baseline; padding: 14px 2px; color: var(--text); text-decoration: none; font-size: 15px; line-height: 1.4; }
   .archive a:active, .archive a:hover { background: var(--hover); }
   .archive .d { flex: none; color: var(--ink); font-size: 13px; font-weight: 600; min-width: 92px; }
+  .archive .new { margin-right: 6px; padding: 1px 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 11px; }
   .archive .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .empty { padding: 40vh 16px; text-align: center; color: var(--ink); font: 15px/1.5 sans-serif; }
-  .fab {
-    position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 10;
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 11px 16px; border: 0; border-radius: 999px; cursor: pointer;
-    background: #FEE500; color: #191919;
-    font: 700 14px/1 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-    box-shadow: 0 6px 18px rgba(0,0,0,.22);
-  }
 </style>
 </head>
 <body>
-{{FEED}}
+<header class="bar">{{LEFT}}<span class="sp"></span>{{SEG}}{{SHARE}}</header>
+<iframe class="card-frame" id="card" title="카드뉴스"></iframe>
+<noscript><p style="text-align:center">카드뉴스를 보려면 자바스크립트를 켜 주세요.</p></noscript>
+{{PEEK}}
+{{ARCHIVE}}
 <script>
-  // 카드뉴스 높이에 맞춰 칸 크기를 자동으로 맞춤
   (function () {
-    var frames = Array.prototype.slice.call(document.querySelectorAll(".card-frame"));
+    var DATA = {{DATA}};
+    var KEY = "cardnews-view";
+    var frame = document.getElementById("card");
+    var buttons = Array.prototype.slice.call(document.querySelectorAll(".seg button"));
+    var keys = DATA.variants.map(function (v) { return v.key; });
+    if (!keys.length) return;
 
-    function fit(f) {
+    function remember(k) { try { sessionStorage.setItem(KEY, k); } catch (e) {} }
+    function recall() { try { return sessionStorage.getItem(KEY); } catch (e) { return null; } }
+
+    // 처음 들어온 사람: 둘 중 하나를 무작위로. 같은 창에서 다시 오면 보던 방식 유지. ?v=onepage 로 지정도 가능
+    function pick() {
+      var q = null;
+      try { q = new URLSearchParams(location.search).get("v"); } catch (e) {}
+      if (q && keys.indexOf(q) >= 0) return q;
+      var s = recall();
+      if (s && keys.indexOf(s) >= 0) return s;
+      var r = keys[Math.floor(Math.random() * keys.length)];
+      remember(r);
+      return r;
+    }
+
+    function show(k) {
+      var v = DATA.variants[keys.indexOf(k)];
+      if (frame.getAttribute("src") !== v.src) frame.setAttribute("src", v.src);
+      frame.title = "카드뉴스 · " + v.label;
+      buttons.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-v") === k ? "true" : "false"); });
+    }
+
+    buttons.forEach(function (b) {
+      b.addEventListener("click", function () { var k = b.getAttribute("data-v"); remember(k); show(k); });
+    });
+
+    // 카드 높이에 맞춰 칸 크기를 맞춤 (화면보다 짧으면 아래 '지난 카드뉴스'가 그대로 보임)
+    function fit() {
       try {
-        var d = f.contentDocument;
+        var d = frame.contentDocument;
         if (!d || !d.documentElement) return;
-        var h = Math.max(d.documentElement.scrollHeight, d.body ? d.body.scrollHeight : 0);
-        var min = window.innerHeight;
-        f.style.height = Math.max(h, min) + "px";
+        frame.style.height = Math.max(d.documentElement.scrollHeight, d.body ? d.body.scrollHeight : 0) + "px";
       } catch (e) {}
     }
-    frames.forEach(function (f) {
-      f.addEventListener("load", function () {
-        fit(f);
-        try {
-          if (window.ResizeObserver) new ResizeObserver(function () { fit(f); }).observe(f.contentDocument.body);
-        } catch (e) {}
-      });
+    frame.addEventListener("load", function () {
+      frame.style.height = "";
+      fit();
+      try { if (window.ResizeObserver) new ResizeObserver(fit).observe(frame.contentDocument.body); } catch (e) {}
     });
-    window.addEventListener("resize", function () { frames.forEach(fit); });
+    window.addEventListener("resize", fit);
 
+    show(pick());
   })();
 </script>
-<script src="assets/config.js"></script>
-<script src="assets/share.js"></script>
+<script src="{{BASE}}assets/config.js"></script>
+<script src="{{BASE}}assets/share.js"></script>
 </body>
 </html>

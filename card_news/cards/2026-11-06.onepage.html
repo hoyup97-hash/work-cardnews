@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>영업 뉴스 한 장 요약</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- TEMPLATE: 1장 = 핵심 3건 축약(원문 헤드라인 + 결론·근거·전망 3줄 + 기사별 원문 보기 링크), 2장 = 더 읽어볼 기사 + 일정 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<style>
+/* Layout: three paper sheets in a swipe deck. Sheet 1 packs all three stories; each story = numbered headline + three short lines (결론 / 근거 / 전망). */
+:root{
+  --desk:#CFE6EE; --desk-2:#BFDCE7; --paper:#F7F6F2; --ink:#1E1A18; --muted:#6A6560; --rule:#1E1A18;
+  --pen:#D7332B; --blue:#0094C2; --chip:#ECEAE3;
+  --font:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--desk:#0E2630;--desk-2:#0B1F28;color-scheme:dark}}
+:root[data-theme="dark"]{--desk:#0E2630;--desk-2:#0B1F28;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--desk)}
+body{font-family:var(--font);color:var(--ink);letter-spacing:-.015em;word-break:keep-all;overflow-wrap:anywhere;
+  background-image:radial-gradient(circle at 20% 10%,var(--desk-2) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,var(--desk-2) 0 1.5px,transparent 2.5px);
+  background-size:38px 38px,52px 52px;padding-block:20px 28px}
+.deck-wrap{max-width:520px;margin:0 auto}
+.deck{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;gap:16px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));scroll-padding:0 max(16px,env(safe-area-inset-left,0px))}
+.deck::-webkit-scrollbar{display:none}
+.sheet{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;aspect-ratio:9/16;background:var(--paper);color:var(--ink);
+  box-shadow:0 1px 0 rgba(0,0,0,.05),0 10px 24px -12px rgba(0,0,0,.35);padding:16px 16px 12px;display:flex;flex-direction:column;min-width:0}
+.mast{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.72rem;padding-bottom:6px;border-bottom:3px double var(--rule)}
+.mast b{font-weight:700;color:var(--blue)}
+.foot{margin-top:auto;padding-top:7px;border-top:3px double var(--rule);display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.68rem;color:var(--muted)}
+/* summary sheet */
+.stories{list-style:none;margin:0;padding:0;display:grid}
+.story{padding:11px 0 10px;border-bottom:1px solid #D9D6CE}
+.story:last-child{border-bottom:0}
+.story .top{display:flex;gap:5px;align-items:center;margin-bottom:3px}
+.num{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:5px;background:var(--blue);color:#fff;font-weight:700;font-size:.78rem}
+.tag{font-size:.64rem;padding:1px 7px;border-radius:999px;background:var(--chip)}
+.src{margin-left:auto;font-size:.64rem;color:var(--muted)}
+.orig{display:inline-flex;align-items:center;min-height:28px;padding:0 2px 0 6px;font-size:.7rem;color:var(--blue);text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+.orig:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:3px}
+.story h2{margin:0;font-size:.95rem;font-weight:700;line-height:1.4;text-wrap:pretty}
+.pts{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:3px}
+.pts li{display:grid;grid-template-columns:2.4em 1fr;font-size:.8rem;line-height:1.5}
+.pts b{font-weight:700;font-size:.68rem;color:var(--pen);padding-top:.15em}
+/* link sheets */
+.ttl{margin:18px 0 4px;font-size:1.5rem;font-weight:400;line-height:1.3}
+.sub{margin:0 0 6px;font-size:.78rem;color:var(--muted)}
+.links{list-style:none;margin:8px 0 0;padding:0;display:grid}
+.links li+li{border-top:1px solid #D9D6CE}
+.links a{display:grid;grid-template-columns:1.6em 1fr;gap:4px;padding:11px 0;color:var(--ink);text-decoration:none;font-size:.95rem;font-weight:700;line-height:1.45}
+.links .k{color:var(--blue);font-variant-numeric:tabular-nums}
+.links small{display:block;margin-top:3px;font-weight:400;font-size:.72rem;color:var(--muted)}
+.links .go{display:block;margin-top:3px;font-weight:400;font-size:.75rem;color:var(--blue)}
+.sched{margin:14px 0 0;padding:10px 12px;background:var(--chip);font-size:.8rem;line-height:1.6}
+.sched b{color:var(--pen)}
+/* nav */
+.nav{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:14px}
+.dots{display:flex;gap:7px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(30,26,24,.25);border:0;padding:0;cursor:pointer}
+.dot[aria-current="true"]{background:var(--blue)}
+.count{background:rgba(30,26,24,.72);color:#fff;font-size:.82rem;padding:4px 11px;border-radius:999px;font-variant-numeric:tabular-nums}
+.arrow{width:40px;height:40px;border-radius:50%;border:0;background:var(--paper);color:var(--ink);font-size:1.1rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.arrow:disabled{opacity:.35;cursor:default}
+.arrow:focus-visible,.dot:focus-visible,.links a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .dot{background:rgba(255,255,255,.3)}}
+:root[data-theme="dark"] .dot{background:rgba(255,255,255,.3)}
+@media (max-width:370px){.story h2{font-size:.9rem}.pts li{font-size:.76rem}}
+</style>
+</head><body>
+
+<div class="deck-wrap">
+  <div class="deck" id="deck" tabindex="0" aria-label="영업 뉴스 한 장 요약">
+    <section class="sheet" aria-label="핵심 3건 요약">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>2026.11.06(금)</span></div>
+      <ol class="stories">
+        <li class="story">
+          <div class="top"><span class="num">1</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">보험저널 11.05</span><a class="orig" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33800">원문 보기 →</a></div>
+          <h2>김용태 GA협회장 “매출 1조 시대, GA 행정규제 한계… ‘보험판매전문회사’ 도입 시급”</h2>
+          <ul class="pts">
+            <li><b>결론</b><span>GA협회, 매출 1조 시대 맞춰 ‘보험판매전문회사’ 도입 촉구(5일 간담회)</span></li>
+            <li><b>근거</b><span>대형 GA가 자영업자로 분류돼 행정규제 한계, 엄격한 규제도 수용 입장</span></li>
+            <li><b>국회</b><span>주호영·민병덕 의원 법안 발의, 민병덕안엔 직접 손해배상책임 포함</span></li>
+          </ul>
+        </li>
+        <li class="story">
+          <div class="top"><span class="num">2</span><span class="tag">GA</span><span class="tag">영업전략</span><span class="src">보험저널 11.05</span><a class="orig" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33786">원문 보기 →</a></div>
+          <h2>“삼성생명도 GA채널 목표 20~30% 줄인다는데”… 2027년 생보 GA시장 위축 신호인가</h2>
+          <ul class="pts">
+            <li><b>결론</b><span>2027년 생보 GA채널 목표 축소설(삼성 20~30%, 교보 등 30~40% 거론)</span></li>
+            <li><b>근거</b><span>700종신 판매중단 신계약 공백·4년 분급 → GA는 수수료·운영비 이중 부담</span></li>
+            <li><b>전망</b><span>통합건강 중심 푸본현대생명·라이나생명 등은 목표 상향, 실적 격차 관건</span></li>
+          </ul>
+        </li>
+        <li class="story">
+          <div class="top"><span class="num">3</span><span class="tag">GA</span><span class="tag">영업전략</span><span class="src">보험저널 11.05</span><a class="orig" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33785">원문 보기 →</a></div>
+          <h2>“생보 독주 GA시장에 균열”… 2027년 생·손보 헤게모니 뒤집히나</h2>
+          <ul class="pts">
+            <li><b>결론</b><span>1200%룰 이후 GA 실적 회복 못 해, 10월 795억원(6월보다 23.9%↓)</span></li>
+            <li><b>근거</b><span>감소액의 96.9%가 생보, 생보 비중 62%→55%. 손보 성장 아닌 생보 감소 결과</span></li>
+            <li><b>전망</b><span>주력상품 공백을 얼마나 빨리 메우고 설계사 영업 동기를 유지하느냐에 달려</span></li>
+          </ul>
+        </li>
+      </ol>
+      <div class="foot"><span>GA 5 · FP 0 · BA 0 · TM 0</span><span>넘겨서 더 읽어볼 기사 →</span></div>
+    </section>
+
+    <section class="sheet" aria-label="더 읽어볼 기사">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>2026.11.06(금)</span></div>
+      <h2 class="ttl">더 읽어볼 기사</h2>
+      <p class="sub">이날 나온 관련 기사입니다.</p>
+      <ul class="links">
+        <li><a href="https://www.fins.co.kr/news/articleView.html?idxno=110436"><span class="k">•</span><span>GA 정착지원금 40~50% 감소…설계사 이동도 줄었다<small>GA · 보험매일 · 2026.11.05</small><span class="go">원문 보기 →</span></span></a></li>
+        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33791"><span class="k">•</span><span>GA 검사 대응, 정도영업이 답이다...④몸집 키운 GA, 이제 &#x27;책임&#x27; 키울 때… 내부통제가 &#x27;기업가치&#x27; 가른다<small>GA · 보험저널 · 2026.11.05</small><span class="go">원문 보기 →</span></span></a></li>
+      </ul>
+      <div class="sched"><b>일정</b> 11.16 분급 3차 FAQ 설명회 · 11.20 보험판매전문회사 입법토론회 · 27.01.01 경영평가 GA 운영위험 항목 시행</div>
+      <div class="foot"><span>2/2</span><span>11.06 07:30 기준 · 원문 요약</span></div>
+    </section>
+  </div>
+  <div class="nav">
+    <button class="arrow" id="prev" type="button" aria-label="이전 장">←</button>
+    <div class="dots" id="dots"></div>
+    <div class="count" id="count" aria-live="polite">1/2</div>
+    <button class="arrow" id="next" type="button" aria-label="다음 장">→</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck'),sheets=[].slice.call(deck.querySelectorAll('.sheet')),
+      dots=document.getElementById('dots'),count=document.getElementById('count'),
+      prev=document.getElementById('prev'),next=document.getElementById('next'),cur=0;
+  sheets.forEach(function(s,i){var b=document.createElement('button');b.className='dot';b.type='button';
+    b.setAttribute('aria-label',(i+1)+'번째 장');b.onclick=function(){go(i)};dots.appendChild(b);});
+  function go(i){i=Math.max(0,Math.min(sheets.length-1,i));deck.scrollTo({left:sheets[i].offsetLeft-sheets[0].offsetLeft,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+  function sync(){var w=sheets[1]?sheets[1].offsetLeft-sheets[0].offsetLeft:1;cur=Math.round(deck.scrollLeft/w);
+    count.textContent=(cur+1)+'/'+sheets.length;prev.disabled=cur===0;next.disabled=cur===sheets.length-1;
+    [].forEach.call(dots.children,function(d,i){d.setAttribute('aria-current',i===cur?'true':'false')});}
+  prev.onclick=function(){go(cur-1)};next.onclick=function(){go(cur+1)};
+  deck.addEventListener('scroll',function(){requestAnimationFrame(sync)},{passive:true});
+  deck.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1)}});
+  sync();
+})();
+</script>
+</body></html>

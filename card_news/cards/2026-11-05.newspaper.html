@@ -71,87 +71,72 @@ body{font-family:var(--font);color:var(--ink);letter-spacing:-.015em;word-break:
 :root[data-theme="dark"] .dot{background:rgba(255,255,255,.3)}
 @media (max-width:380px){.nameplate{font-size:1.7rem}.heads li{font-size:1.15rem}.three li{font-size:.88rem}}
 @media (prefers-reduced-motion:reduce){.deck{scroll-behavior:auto}}
-
-@page{size:380px 540px;margin:0}
-@media print{
-  html,body{background:#F7F6F2!important;background-image:none!important;padding:0!important;margin:0}
-  .deck-wrap{max-width:none}
-  .deck{display:block;overflow:visible;padding:0!important;gap:0}
-  .sheet{width:380px;height:540px;aspect-ratio:auto;box-shadow:none;page-break-after:always;break-after:page;padding:20px 20px 16px}
-  .sheet:last-child{page-break-after:auto;break-after:auto}
-  .nav{display:none}
-  .three{gap:7px}.three li{font-size:.86rem;line-height:1.55}.art h2{font-size:1.06rem}
-  .heads li,.art h2,.more a,.nameplate,.dateline,.num,.label{-webkit-text-stroke:.45px currentColor}
-  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-}
 </style>
-
 </head><body>
+
 <div class="deck-wrap">
   <div class="deck" id="deck" tabindex="0" aria-label="영업혁신실 신문 슬라이드">
-
     <section class="sheet" aria-label="1면">
       <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>푸본현대생명</span></div>
-      <div class="dateline">11월 6일(금)</div>
+      <div class="dateline">11월 5일(목)</div>
       <div class="nameplate">보험 영업 신문</div>
       <ol class="heads">
-        <li><span class="n">1.</span><span>삼성생명도 2027년 GA채널 목표 <span class="circ">20~30%</span> 축소설… 생보 GA시장 위축 신호</span></li>
-        <li><span class="n">2.</span><span>1200%룰 확대 후 GA 정착지원금 <span class="circ">40~50%</span> 감소… 설계사 이동도 줄어</span></li>
-        <li><span class="n">3.</span><span>보험사 경영평가에 <span class="ul">GA 운영위험 관리</span> 반영… 판매위탁 책임 강화</span></li>
+        <li><span class="n">1.</span><span>보험사 보험부채 평가 관리 강화…<span class="ul">GA 감독 책임</span>도 확대</span></li>
+        <li><span class="n">2.</span><span>“700종신 빠진 시책 새판짜기”… 통합건강·단기납종신·경영인정기 강세, <span class="circ">대체 종신 약세</span></span></li>
+        <li><span class="n">3.</span><span>'분급제' 이은 다음 수순… <span class="ul">'상담기록 보존'</span> 등 GA 판매자 책임 확대 '시동'</span></li>
       </ol>
-      <div class="foot"><span>GA 5 · FP 0 · BA 0 · TM 0</span><span>다음 장에서 3줄 요약 →</span></div>
+      <div class="foot"><span>GA 4 · FP 0 · BA 0 · TM 0</span><span>다음 장에서 3줄 요약 →</span></div>
     </section>
 
     <section class="sheet art" aria-label="1번 기사">
-      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 6일(금)</span></div>
-      <div class="art-top"><span class="num">1</span><span class="tag">GA</span><span class="tag">영업전략</span><span class="src">보험저널 11.05</span></div>
-      <h2>“삼성생명도 GA채널 목표 20~30% 줄인다는데”… 2027년 생보 GA시장 위축 신호인가</h2>
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 5일(목)</span></div>
+      <div class="art-top"><span class="num">1</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">보험매일 11.04</span></div>
+      <h2>보험사 보험부채 평가 관리 강화…GA 감독 책임도 확대</h2>
       <div class="label">3줄 요약</div>
       <ol class="three">
-        <li><span>업계에 삼성생명이 2027년 GA채널 영업목표를 올해보다 20~30%가량 줄인다는 말이 돌고, 700종신 주력 생보사도 30~40% 하향 가능성이 거론됨.</span></li>
-        <li><span>9월 생보 GA 신계약 월초보험료 596.6억원 중 700종신이 252.2억원(42.3%)이었고, 판매중단 후 10월 신계약은 전월 대비 약 38% 감소함.</span></li>
-        <li><span>4년 분급·계약체결비용 한도·K-ICS 규제 등이 배경이며, 푸본현대생명 등 일부 생보사는 2027년 목표를 올해보다 높게 잡은 것으로 알려짐.</span></li>
+        <li><span>금융위원회가 4일 정례회의에서 계리가정 관리체계와 경영실태평가 기준을 강화하는 &#x27;보험업감독규정&#x27; 개정안을 의결함.</span></li>
+        <li><span>보험사는 계리가정 내부통제 기준을 마련하고(내년 1월 1일 시행), &#x27;계리가정보고서&#x27;를 2026년 회계연도 결산분부터 매년 금감원에 제출해야 함.</span></li>
+        <li><span>경영실태평가에는 금리 리스크 &#x27;듀레이션 갭&#x27;과 법인보험대리점(GA) 운영 관리의 적정성 항목이 새롭게 반영됨.</span></li>
       </ol>
-      <div class="foot"><span>2/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33786">원문 보기 →</a></div>
+      <div class="foot"><span>2/5</span><a class="go" href="https://www.fins.co.kr/news/articleView.html?idxno=110423">원문 보기 →</a></div>
     </section>
 
     <section class="sheet art" aria-label="2번 기사">
-      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 6일(금)</span></div>
-      <div class="art-top"><span class="num">2</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">보험매일 11.05</span></div>
-      <h2>GA 정착지원금 40~50% 감소…설계사 이동도 줄었다</h2>
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 5일(목)</span></div>
+      <div class="art-top"><span class="num">2</span><span class="tag">GA</span><span class="tag">영업전략</span><span class="src">보험저널 11.04</span></div>
+      <h2>[11월 생보GA시책] “700종신 빠진 시책 새판짜기”… 통합건강·단기납종신·경영인정기 강세, 대체 종신 약세</h2>
       <div class="label">3줄 요약</div>
       <ol class="three">
-        <li><span>박원규 금융감독원 보험제도팀장은 7~8월 GA 설계사 정착지원금이 상반기 대비 40~50% 줄고 설계사 이동도 감소했다고 설명함.</span></li>
-        <li><span>1200%룰은 계약 첫해 모집수수료를 월납보험료의 12배 이내로 묶는 제도로, 지난 7월부터 GA 소속 설계사로 확대 적용됨.</span></li>
-        <li><span>시행 초기 두 달 통계라 지속 모니터링이 필요하며, 집계 기준과 9월 이후 추이는 추가 확인이 필요하다는 지적임.</span></li>
+        <li><span>700종신의 대체상품인 건강종신·인출형종신의 11월 평균 시책률은 715%로, 9월 700종신 판매 당시(905%)보다 21.0% 낮은 수준임.</span></li>
+        <li><span>반면 통합건강보험은 9월 2,014%에서 11월 2,056%로 2,000%대를 유지했지만, 익월 시책률은 332%로 건강·인출형종신(335%)과 사실상 비슷함.</span></li>
+        <li><span>4년 분급 시행을 앞두고 상품별 판매 경쟁력은 총시책률뿐 아니라 익월 지급액, 후속 시책 지급조건, 계약유지율 등을 종합해 판단해야 한다는 분석.</span></li>
       </ol>
-      <div class="foot"><span>3/5</span><a class="go" href="https://www.fins.co.kr/news/articleView.html?idxno=110436">원문 보기 →</a></div>
+      <div class="foot"><span>3/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33769">원문 보기 →</a></div>
     </section>
 
     <section class="sheet art" aria-label="3번 기사">
-      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 6일(금)</span></div>
-      <div class="art-top"><span class="num">3</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">보험매일 11.05</span></div>
-      <h2>보험사 경영평가에 GA 관리 반영…판매위탁 책임 강화</h2>
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 5일(목)</span></div>
+      <div class="art-top"><span class="num">3</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">보험저널 11.04</span></div>
+      <h2>FP &#x27;1200%룰&#x27; · 4~7년 &#x27;분급제&#x27; 이은 다음 수순… 슬그머니 &#x27;상담기록 보존&#x27; 등 GA 판매자 책임 확대 &#x27;시동&#x27;</h2>
       <div class="label">3줄 요약</div>
       <ol class="three">
-        <li><span>금융위원회가 4일 의결한 보험업감독규정 개정안으로 경영실태평가 경영관리리스크 부문에 ‘법인보험대리점 운영위험 관리의 적정성’ 항목이 추가됨.</span></li>
-        <li><span>비계량 방식으로 평가하며 내년 1월 1일부터 시행, GA채널 과당경쟁에 따른 소비자 피해 우려에 대응하는 조치임.</span></li>
-        <li><span>보험사는 올해 회계연도 결산분부터 계리가정보고서를 금감원에 제출해야 하며, 듀레이션 갭 지표는 2028년부터 시행됨.</span></li>
+        <li><span>지난 3일 박성훈 의원·보험연구원 정책토론회에서 판매 단계 상담기록 보존 의무화와 대형 GA의 직접 배상책임 강화 주장이 제기됨.</span></li>
+        <li><span>보험연구원의 2025년 소비자 500명 조사에서 84.1%가 모집수수료 수준에 따라 추천 보험회사가 달라질 수 있다고 인식했고, 수수료율을 직접 확인한 경험은 28.8%.</span></li>
+        <li><span>GA 업계는 초기 단계부터 모든 상담을 녹취·기록하는 것은 현실적으로 불가능하다는 입장으로, 영업 현장의 반발과 논란이 예상됨.</span></li>
       </ol>
-      <div class="foot"><span>4/5</span><a class="go" href="https://www.fins.co.kr/news/articleView.html?idxno=110435">원문 보기 →</a></div>
+      <div class="foot"><span>4/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33781">원문 보기 →</a></div>
     </section>
 
     <section class="sheet" aria-label="이 기사들도 읽어보세요">
-      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 6일(금)</span></div>
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 5일(목)</span></div>
       <h2 class="more-title">이 기사들도 읽어보세요!</h2>
       <ul class="more">
-        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33785"><span>“생보 독주 GA시장에 균열”… 2027년 생·손보 헤게모니 뒤집히나<small>GA · 보험저널 11.05</small></span></a></li>
-        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33787"><span>“부채 뻥튀기·GA 불건전영업 막는다”…금융위, 보험사 경영평가 대수술<small>GA · 보험저널 11.05</small></span></a></li>
+        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33782"><span>“700종신 빠진 자리 누가 주도할까”… 생보사, 건강종신·인출형종신 2파전 양상<small>GA · 보험저널 11.04</small></span></a></li>
+        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33775"><span>“살아서 100% 꺼내 쓴다”... 확 달라진 &#x27;종신보험&#x27;, 2030세대 호응<small>전 채널 · 보험저널 11.04</small></span></a></li>
       </ul>
-      <div class="sched"><b>일정</b> 27.01 판매수수료 4년 분급 시행 · 27.01.01 경영실태평가 ‘GA 운영위험 관리’ 항목 시행 · 28.01.01 듀레이션 갭 지표 시행</div>
-      <div class="foot"><span>5/5</span><span>11.06 06:00 기준 · 원문 요약</span></div>
+      <div class="sched"><b>일정</b> 11.16 분급 3차 FAQ 설명회 · 11.20 보험판매전문회사 입법토론회 · 27.01.01 계리가정 내부통제 기준 시행</div>
+      <div class="foot"><span>5/5</span><span>11.05 07:30 기준 · 원문 요약</span></div>
     </section>
-
   </div>
   <div class="nav">
     <button class="arrow" id="prev" type="button" aria-label="이전 슬라이드">←</button>
@@ -178,5 +163,4 @@ body{font-family:var(--font);color:var(--ink);letter-spacing:-.015em;word-break:
   sync();
 })();
 </script>
-
 </body></html>
