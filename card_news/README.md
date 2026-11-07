@@ -69,6 +69,7 @@ index.template.html       ← 홈 화면 틀 (카드뉴스는 자동으로 채�
 scripts/build.py          ← 목록을 자동으로 만드는 스크립트
 AUTOMATION.md             ← Claude가 카드를 올릴 때 따르는 발행 규칙
 SETUP.md                  ← 새 담당자 세팅 (처음 한 번)
+CUSTOMIZE.md              ← 사이트 구조·디자인 바꾸는 법
 cardnews-site/SKILL.md    ← 각자 Claude 계정에 추가하는 운영 스킬
 .github/workflows/        ← 자동 배포 설정
 ```
