@@ -82,6 +82,6 @@ description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에
 | add_repo가 권한·연결 오류 | claude.ai에 GitHub 미연결 또는 저장소 접근 미허용 | SETUP.md 2번 (GitHub 연결, work-cardnews 접근 허용) |
 | push가 403 | GitHub 계정에 저장소 쓰기 권한 없음 | 관리자에게 저장소 쓰기 권한(Collaborator 또는 Organization 멤버) 요청 |
 | fubon-news-newspaper / fubon-news-onepage를 쓸 수 없음 | 계정에 스킬 미추가 | 동료에게 두 스킬을 공유받아 계정에 추가. 그 전에는 카드를 만들지 않는다 |
-| 핵심 기사 0건 | 주말·공휴일·이른 시각 | 정상. 만들지 않고 보고 |
+| 핵심 기사 0건 | 주말·공휴일·이른 시각 | 테스트 기간에는 AUTOMATION.md 3번대로 낮은 점수·기간 직전 기사로 채워 무조건 만든다. 테스트가 끝나면 만들지 않고 보고 |
 | 예약 실행이 승인 대기로 멈춤 | 예약 작업 승인 설정 | 예약 작업 설정에서 자동 승인 켜기 |
 | 배포 후 사이트에 안 보임 | Actions 실패 또는 캐시 | 저장소 Actions 탭 확인(빨간 X면 실패 로그), 1~2분 뒤 새로고침 |
