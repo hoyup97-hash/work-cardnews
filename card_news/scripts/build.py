@@ -17,6 +17,7 @@ GitHub Actions에서 자동 실행되므로 담당자가 직접 돌릴 필요는
 
 import html
 import json
+import os
 import re
 import shutil
 from datetime import date
@@ -158,10 +159,18 @@ def render_page(template: str, days, idx: int, base: str) -> str:
         )
         archive = f'<section class="archive" id="archive" aria-label="{title}"><ul>{"".join(rows)}</ul></section>'
     data = {"variants": variants}
-    page_title = f"보험 영업 뉴스 · {cur['label']}"
+    page_title = f"영업혁신실 카드뉴스 · {cur['label']}"
+    desc = cur["headline"] or "보험 영업·상품·제도 오늘의 뉴스"
+    # 링크 미리보기용 전체 주소 (GitHub Actions가 SITE_URL 을 넘겨줌. 없으면 생략)
+    site_url = os.environ.get("SITE_URL", "").strip().rstrip("/")
+    og_url = ""
+    if site_url:
+        og_url = f'<meta property="og:url" content="{site_url}/{"" if is_home else cur["url"]}">\n'
+
     return (
         template.replace("{{TITLE}}", html.escape(page_title))
-        .replace("{{DESC}}", html.escape(cur["headline"]))
+        .replace("{{DESC}}", html.escape(desc))
+        .replace("{{OG_URL}}", og_url)
         .replace("{{BASE}}", base)
         .replace("{{LEFT}}", left)
         .replace("{{SEG}}", seg)

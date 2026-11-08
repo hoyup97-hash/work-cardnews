@@ -30,7 +30,8 @@
 | 무작위로 보여주는 방식, 전환 동작 | `card_news/index.template.html` 아래쪽 `<script>` (`pick`, `show`) |
 | 보기 방식 종류·버튼 이름, 지난 목록 채우는 방식 | `card_news/scripts/build.py` 의 `VARIANTS`, `render_page` |
 | 공유 버튼 동작(카톡 공유) | `card_news/assets/share.js`, 카카오 키는 `card_news/config.json` |
-| 카톡 미리보기 제목·설명 | `card_news/index.template.html` 의 og 태그 |
+| 카톡 미리보기 제목·설명 | 제목 문구는 `card_news/scripts/build.py` 의 `page_title`, 태그 틀은 `card_news/index.template.html` 의 og 태그 (설명 = 그날 첫 헤드라인) |
+| 카톡 미리보기 사진(썸네일) | `card_news/scripts/thumbnail.py` — 배포 때 신문형 1면과 한 장 요약 1장을 나란히 찍어 `og/날짜.png` 로 만듦 (최근 14일치) |
 | 카드 디자인(신문형 5장 / 한 장 요약 2장) | 아래 '카드 디자인 바꾸기' |
 | Claude가 카드를 올릴 때 지키는 규칙 | `card_news/AUTOMATION.md` |
 | 자동 배포 방식 | `.github/workflows/deploy.yml` (웬만하면 건드리지 않음) |

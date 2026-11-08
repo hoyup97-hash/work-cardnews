@@ -24,9 +24,20 @@ jobs:
         run: |
           shopt -s nullglob
           for f in card_news/cards/*.html.html; do mv "$f" "${f%.html}"; done
+      - id: pages
+        uses: actions/configure-pages@v5
       - name: 사이트 만들기
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
         run: python3 card_news/scripts/build.py
-      - uses: actions/configure-pages@v5
+      - name: 링크 미리보기 이미지 만들기 (실패해도 배포는 계속)
+        continue-on-error: true
+        env:
+          SITE_URL: ${{ steps.pages.outputs.base_url }}
+        run: |
+          pip install --quiet playwright==1.55.0
+          python3 -m playwright install --with-deps chromium
+          python3 card_news/scripts/thumbnail.py
       - uses: actions/upload-pages-artifact@v3
         with:
           path: card_news/_site
