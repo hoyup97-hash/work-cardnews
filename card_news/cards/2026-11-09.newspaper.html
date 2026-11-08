@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>영업혁신실 신문</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- TEMPLATE: 슬라이드 1 = 1면(헤드라인 3개), 2~4 = 기사별 3줄 요약, 5 = 이 기사들도 읽어보세요. CSS·폰트·구조 고정 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<style>
+/* Layout: newspaper sheets in a horizontal swipe deck (4:5, Instagram card-news ratio). One sheet per slide; red pen marks the key phrase on the front page. Single paper look, both themes. */
+:root{
+  --desk:#CFE6EE; --desk-2:#BFDCE7; --paper:#F7F6F2; --ink:#1E1A18; --muted:#6A6560; --rule:#1E1A18;
+  --pen:#D7332B; --blue:#0094C2; --teal:#00A9A1; --chip:#ECEAE3;
+  --font:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--desk:#0E2630;--desk-2:#0B1F28;color-scheme:dark}}
+:root[data-theme="dark"]{--desk:#0E2630;--desk-2:#0B1F28;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--desk)}
+body{font-family:var(--font);color:var(--ink);letter-spacing:-.015em;word-break:keep-all;overflow-wrap:anywhere;
+  background-image:radial-gradient(circle at 20% 10%,var(--desk-2) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,var(--desk-2) 0 1.5px,transparent 2.5px);
+  background-size:38px 38px,52px 52px;padding-block:20px 28px}
+.deck-wrap{max-width:520px;margin:0 auto;position:relative}
+.count{background:rgba(30,26,24,.72);color:#fff;font-size:.82rem;padding:4px 11px;border-radius:999px;font-variant-numeric:tabular-nums}
+.deck{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));gap:16px;scroll-padding:0 max(16px,env(safe-area-inset-left,0px))}
+.deck::-webkit-scrollbar{display:none}
+.sheet{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;aspect-ratio:4/5;background:var(--paper);color:var(--ink);
+  box-shadow:0 1px 0 rgba(0,0,0,.05),0 10px 24px -12px rgba(0,0,0,.35);padding:18px 18px 16px;display:flex;flex-direction:column;min-width:0}
+.mast{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.74rem;letter-spacing:.02em;padding-bottom:7px;border-bottom:3px double var(--rule)}
+.mast b{font-weight:700;color:var(--blue)}
+.foot{margin-top:auto;padding-top:8px;border-top:3px double var(--rule);display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;font-size:.7rem;color:var(--muted)}
+/* front page */
+.dateline{display:flex;align-items:center;gap:10px;margin:16px 0 0;font-size:1.05rem;font-weight:700}
+.dateline::before,.dateline::after{content:"";flex:1;height:2px;background:var(--rule)}
+.nameplate{border:2px solid var(--rule);text-align:center;font-size:2rem;font-weight:700;letter-spacing:.18em;padding:6px 4px 4px;margin-top:-1px;line-height:1.2}
+.heads{list-style:none;margin:auto 0;padding:18px 0;display:grid;gap:18px}
+.heads li{display:grid;grid-template-columns:1.6em 1fr;font-size:1.32rem;font-weight:700;line-height:1.42}
+.heads .n{font-variant-numeric:tabular-nums}
+.circ{position:relative;white-space:nowrap;padding:0 2px}
+.circ::before,.circ::after{content:"";position:absolute;inset:-4px -3px -3px -4px;border:2px solid var(--pen);border-radius:50%;transform:rotate(-2.5deg);pointer-events:none}
+.circ::after{inset:-2px -1px -5px -6px;transform:rotate(1.8deg);opacity:.75}
+.ul{background-image:linear-gradient(var(--pen),var(--pen));background-repeat:no-repeat;background-size:100% 2.5px;background-position:0 100%;padding-bottom:2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+/* article sheets */
+.art-top{display:flex;gap:6px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:6px;background:var(--blue);color:#fff;font-weight:700;font-size:.95rem}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--ink)}
+.src{margin-left:auto;font-size:.72rem;color:var(--muted)}
+.art h2{margin:10px 0 0;font-size:1.12rem;font-weight:700;line-height:1.45;text-wrap:balance}
+.label{margin:16px 0 8px;display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:700;color:var(--pen)}
+.label::after{content:"";flex:1;height:1px;background:var(--pen);opacity:.5}
+.three{margin:0;padding:0;list-style:none;display:grid;gap:10px;counter-reset:t}
+.three li{counter-increment:t;display:grid;grid-template-columns:1.4em 1fr;font-size:.93rem;line-height:1.62}
+.three li::before{content:counter(t) ".";font-weight:700;color:var(--ink)}
+.go{display:inline-flex;align-items:center;min-height:36px;color:var(--blue);text-decoration:none;font-size:.82rem}
+/* more */
+.more-title{margin:22px 0 4px;font-size:1.7rem;font-weight:400;line-height:1.3}
+.more{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px}
+.more a{display:grid;grid-template-columns:1em 1fr;gap:6px;padding:7px 0;color:var(--ink);text-decoration:none;font-size:.98rem;font-weight:700;line-height:1.45}
+.more a::before{content:"•"}
+.more small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);margin-top:2px}
+.sched{margin:14px 0 0;padding:10px 12px;background:var(--chip);font-size:.82rem;line-height:1.6}
+.sched b{color:var(--pen)}
+/* nav */
+.nav{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:14px}
+.dots{display:flex;gap:7px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(30,26,24,.25);border:0;padding:0;cursor:pointer}
+.dot[aria-current="true"]{background:var(--blue)}
+.arrow{width:40px;height:40px;border-radius:50%;border:0;background:var(--paper);color:var(--ink);font-size:1.1rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.arrow:disabled{opacity:.35;cursor:default}
+.arrow:focus-visible,.dot:focus-visible,.go:focus-visible,.more a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .dot{background:rgba(255,255,255,.3)}}
+:root[data-theme="dark"] .dot{background:rgba(255,255,255,.3)}
+@media (max-width:380px){.nameplate{font-size:1.7rem}.heads li{font-size:1.15rem}.three li{font-size:.88rem}}
+@media (prefers-reduced-motion:reduce){.deck{scroll-behavior:auto}}
+</style>
+</head><body>
+
+<div class="deck-wrap">
+  <div class="deck" id="deck" tabindex="0" aria-label="영업혁신실 신문 슬라이드">
+    <section class="sheet" aria-label="1면">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>푸본현대생명</span></div>
+      <div class="dateline">11월 9일(월)</div>
+      <div class="nameplate">보험 영업 신문</div>
+      <ol class="heads">
+        <li><span class="n">1.</span><span>“700종신 빠져도 GA는 <span class="circ">연금 아닌 종신</span> 택했다”… 단기납·건강·인출형종신 판매 급증</span></li>
+        <li><span class="n">2.</span><span>불완전판매 제재 <span class="ul">'3OUT→2OUT'</span>… 어센틱금융그룹, '클린 영업' 강화</span></li>
+        <li><span class="n">3.</span><span>메타리치, 수수료 경쟁 넘어 <span class="ul">‘GA 2.0’ 전환</span>… 통합 업무시스템 ‘MetaArena’ 구축</span></li>
+      </ol>
+      <div class="foot"><span>GA 4 · FP 0 · BA 0 · TM 0</span><span>다음 장에서 3줄 요약 →</span></div>
+    </section>
+
+    <section class="sheet art" aria-label="1번 기사">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 9일(월)</span></div>
+      <div class="art-top"><span class="num">1</span><span class="tag">GA</span><span class="tag">상품</span><span class="src">보험저널 11.06</span></div>
+      <h2>“700종신 빠져도 GA는 연금 아닌 종신 택했다”… 단기납·건강·인출형종신 판매 급증</h2>
+      <div class="label">3줄 요약</div>
+      <ol class="three">
+        <li><span>700종신보험 판매중단 이후에도 GA채널에서 종신보험 계열 상품의 판매 증가세가 두드러짐. 700종신 제외 종신보험은 10월 207억원으로 59.2% 증가.</span></li>
+        <li><span>다만 종신보험 전체 실적은 382억원에서 207억원으로 45.8% 감소해, 대체상품 증가만으로는 700종신 공백을 메우지 못함.</span></li>
+        <li><span>향후 대체상품의 경쟁력은 보장·환급 구조뿐 아니라 설계사 수수료와 판매시책에 따라 달라질 수 있다는 업계 관계자 언급.</span></li>
+      </ol>
+      <div class="foot"><span>2/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33803">원문 보기 →</a></div>
+    </section>
+
+    <section class="sheet art" aria-label="2번 기사">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 9일(월)</span></div>
+      <div class="art-top"><span class="num">2</span><span class="tag">GA</span><span class="tag">영업전략</span><span class="src">보험저널 11.06</span></div>
+      <h2>[GA 품질경영 시대] 불완전판매 제재 '3OUT→2OUT'… 어센틱금융그룹, '클린 영업' 강화</h2>
+      <div class="label">3줄 요약</div>
+      <ol class="three">
+        <li><span>GA의 경쟁 기준이 판매 품질과 소비자 신뢰로 확대되는 가운데, 어센틱금융그룹은 불완전판매 제재 기준을 '3OUT'에서 '2OUT'으로 강화.</span></li>
+        <li><span>최근 12개월 동안 민원으로 인한 불완전판매 수용 건이 누적 2건 이상이면 설계사를 해촉할 수 있으며, 2026년 상반기 GA 경영공시 기준 불완전판매율은 생보 0.03%, 손보 0%.</span></li>
+        <li><span>보험판매전문회사 제도 도입 등으로 GA의 역할이 커질 것에 대비해 전문성과 내부통제 역량을 강화하겠다는 방침.</span></li>
+      </ol>
+      <div class="foot"><span>3/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33798">원문 보기 →</a></div>
+    </section>
+
+    <section class="sheet art" aria-label="3번 기사">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 9일(월)</span></div>
+      <div class="art-top"><span class="num">3</span><span class="tag">GA</span><span class="tag">영업전략</span><span class="src">보험저널 11.06</span></div>
+      <h2>메타리치, 수수료 경쟁 넘어 ‘GA 2.0’ 전환… 통합 업무시스템 ‘MetaArena’ 구축(영상+)</h2>
+      <div class="label">3줄 요약</div>
+      <ol class="three">
+        <li><span>GA 소속 설계사까지 ‘1,200%룰’이 확대 적용되면서 높은 수수료와 지원금만으로는 차별화가 어려워져, 메타리치는 ‘MetaArena’를 구축 중.</span></li>
+        <li><span>영업관리·고객관리·보험금 청구·인사관리 등 10여 종 이상의 업무를 한 환경에서 연결하고, 조직단계별 권한체계로 정보 접근범위를 관리.</span></li>
+        <li><span>메타리치는 업무환경, 체계적 조직 운영, 정보보호 수준이 GA 경쟁력을 좌우할 것이라며 GA 2.0 환경을 구축해 나갈 계획.</span></li>
+      </ol>
+      <div class="foot"><span>4/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33783">원문 보기 →</a></div>
+    </section>
+
+    <section class="sheet" aria-label="이 기사들도 읽어보세요">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 9일(월)</span></div>
+      <h2 class="more-title">이 기사들도 읽어보세요!</h2>
+      <ul class="more">
+        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33806"><span>32만 명에 먼저 다가가고 1만 명 새로 '연결'했다… 메트라이프생명, 'CSW' 성과 눈길<small>전 채널 · 보험저널 11.06</small></span></a></li>
+        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33771"><span>[GA 품질경영 시대] 스카이블루에셋, 매월 '준법 DAY' 운영… 현장 밀착 준법경영으로 '질적 성장' 정조준(영상+)<small>GA · 보험저널 11.06</small></span></a></li>
+      </ul>
+      <div class="sched"><b>일정</b> 11.16 분급 3차 FAQ 설명회 · 11.20 보험판매전문회사 입법토론회 · 27.01.01 4년 분급 시행</div>
+      <div class="foot"><span>5/5</span><span>11.09 07:30 기준 · 원문 요약</span></div>
+    </section>
+  </div>
+  <div class="nav">
+    <button class="arrow" id="prev" type="button" aria-label="이전 슬라이드">←</button>
+    <div class="dots" id="dots"></div>
+    <div class="count" id="count" aria-live="polite">1/5</div>
+    <button class="arrow" id="next" type="button" aria-label="다음 슬라이드">→</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck'),sheets=[].slice.call(deck.querySelectorAll('.sheet')),
+      dots=document.getElementById('dots'),count=document.getElementById('count'),
+      prev=document.getElementById('prev'),next=document.getElementById('next'),cur=0;
+  sheets.forEach(function(s,i){var b=document.createElement('button');b.className='dot';b.type='button';
+    b.setAttribute('aria-label',(i+1)+'번 슬라이드');b.onclick=function(){go(i)};dots.appendChild(b);});
+  function go(i){i=Math.max(0,Math.min(sheets.length-1,i));deck.scrollTo({left:sheets[i].offsetLeft-sheets[0].offsetLeft,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+  function sync(){var w=sheets[1]?sheets[1].offsetLeft-sheets[0].offsetLeft:1;cur=Math.round(deck.scrollLeft/w);
+    count.textContent=(cur+1)+'/'+sheets.length;prev.disabled=cur===0;next.disabled=cur===sheets.length-1;
+    [].forEach.call(dots.children,function(d,i){d.setAttribute('aria-current',i===cur?'true':'false')});}
+  prev.onclick=function(){go(cur-1)};next.onclick=function(){go(cur+1)};
+  deck.addEventListener('scroll',function(){requestAnimationFrame(sync)},{passive:true});
+  deck.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1)}});
+  sync();
+})();
+</script>
+</body></html>
