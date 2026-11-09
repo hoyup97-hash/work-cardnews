@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<!--
+  링크 미리보기 썸네일 틀 (1200x630). 배포할 때 scripts/build.py 가 날짜마다 채워서 Chrome으로 찍습니다.
+  {{ }} 자리: FONTS(글꼴 폴더 주소), DATE(11월 9일(월)), HEAD(1번 헤드라인, 빨간 펜 표시 포함), COUNT(그날 기사 수)
+  카톡 미리보기에서는 작게 보이므로 1번 헤드라인 하나만 크게 넣습니다.
+-->
+<style>
+@font-face{font-family:P;font-weight:500;src:url({{FONTS}}/Pretendard-Medium.otf)}
+@font-face{font-family:P;font-weight:700;src:url({{FONTS}}/Pretendard-Bold.otf)}
+@font-face{font-family:P;font-weight:800;src:url({{FONTS}}/Pretendard-ExtraBold.otf)}
+:root{--desk:#CFE6EE;--desk-2:#BFDCE7;--paper:#F7F6F2;--ink:#1E1A18;--muted:#6A6560;--pen:#D7332B;--blue:#0094C2;--chip:#ECEAE3}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1200px;height:630px;overflow:hidden}
+body{font-family:P,sans-serif;color:var(--ink);letter-spacing:-.02em;word-break:keep-all;background:var(--desk);
+  background-image:radial-gradient(circle at 20% 10%,var(--desk-2) 0 3px,transparent 4px),radial-gradient(circle at 70% 60%,var(--desk-2) 0 2.5px,transparent 3.5px);
+  background-size:56px 56px,78px 78px;display:grid;place-items:center}
+.sheet{width:1100px;height:550px;background:var(--paper);padding:30px 50px 26px;display:flex;flex-direction:column;
+  box-shadow:0 2px 0 rgba(0,0,0,.05),0 22px 44px -18px rgba(0,0,0,.4);transform:rotate(-.6deg)}
+.mast{display:flex;justify-content:space-between;align-items:center;font-size:26px;font-weight:500;padding-bottom:12px;border-bottom:5px double var(--ink)}
+.mast b{color:var(--blue);font-weight:700}
+.plate{border:3px solid var(--ink);border-left:0;border-right:0;margin-top:0;padding:8px 0 6px;text-align:center;font-size:34px;font-weight:800;letter-spacing:.3em}
+.date{display:flex;align-items:center;gap:16px;margin-top:22px;font-size:30px;font-weight:700}
+.date .num{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:9px;background:var(--blue);color:#fff;font-size:28px;letter-spacing:0}
+.box{flex:1;display:flex;align-items:center;min-height:0;padding:6px 0 10px}
+.head{font-size:64px;font-weight:800;line-height:1.36;text-wrap:balance}
+.circ{position:relative;white-space:nowrap;padding:0 4px}
+.circ::before,.circ::after{content:"";position:absolute;inset:-6px -6px -4px -8px;border:3.5px solid var(--pen);border-radius:50%;transform:rotate(-2.5deg)}
+.circ::after{inset:-3px -3px -8px -11px;transform:rotate(1.8deg);opacity:.75}
+.ul{background-image:linear-gradient(var(--pen),var(--pen));background-repeat:no-repeat;background-size:100% 5px;background-position:0 100%;padding-bottom:3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.foot{display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:5px double var(--ink);font-size:25px;font-weight:500;color:var(--muted)}
+.chips{display:flex;gap:10px}
+.chip{padding:5px 15px;border-radius:999px;background:var(--chip);color:var(--ink);font-weight:700}
+</style></head><body>
+<div class="sheet">
+  <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>{{DATE}}</span></div>
+  <div class="plate">보험 영업 신문</div>
+  <div class="date"><span class="num">1</span><span>오늘의 1면</span></div>
+  <div class="box"><p class="head" id="h">{{HEAD}}</p></div>
+  <div class="foot"><span>오늘 핵심 기사 {{COUNT}}건 · 눌러서 보기</span><span class="chips"><span class="chip">신문형</span><span class="chip">한 장 요약</span></span></div>
+</div>
+<script>
+  // 헤드라인이 길면 칸에 들어갈 때까지 글자를 줄인다
+  (function () {
+    var h = document.getElementById("h"), box = h.parentNode, s = 64;
+    function fit() { while (s > 34 && h.scrollHeight > box.clientHeight - 16) { s -= 2; h.style.fontSize = s + "px"; } }
+    fit();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  })();
+</script>
+</body></html>

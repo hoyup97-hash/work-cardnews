@@ -15,10 +15,15 @@ GitHub Actions에서 자동 실행되므로 담당자가 직접 돌릴 필요는
 로컬에서 확인하고 싶으면:  python3 card_news/scripts/build.py  →  card_news/_site/index.html 열기
 """
 
+import hashlib
 import html
 import json
 import re
+import os
 import shutil
+import subprocess
+import tempfile
+from html.parser import HTMLParser
 from datetime import date
 from pathlib import Path
 
@@ -26,6 +31,9 @@ ROOT = Path(__file__).resolve().parent.parent
 CARDS = ROOT / "cards"
 ASSETS = ROOT / "assets"
 TEMPLATE = ROOT / "index.template.html"
+THUMB_TEMPLATE = ROOT / "thumb.template.html"
+FONTS = ROOT / "scripts" / "fonts"
+THUMB_DAYS = 30  # 썸네일을 새로 찍는 최근 날짜 수 (그 전 날짜는 기본 썸네일)
 CONFIG = ROOT / "config.json"
 OUT = ROOT / "_site"
 
@@ -81,6 +89,60 @@ def first_headline(text: str) -> str:
     return _strip(m.group(1)) if m else ""
 
 
+class _HeadClean(HTMLParser):
+    """헤드라인 HTML에서 빨간 펜 표시(circ, ul)만 남기고 나머지 태그는 지운다"""
+    KEEP = ("circ", "ul")
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.out, self.stack, self.skip = [], [], 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "span":
+            return
+        cls = (dict(attrs).get("class") or "").split()
+        if self.skip or "n" in cls:
+            self.stack.append("skip"); self.skip += 1
+        elif any(c in cls for c in self.KEEP):
+            keep = next(c for c in cls if c in self.KEEP)
+            self.stack.append("keep"); self.out.append(f'<span class="{keep}">')
+        else:
+            self.stack.append("drop")
+
+    def handle_endtag(self, tag):
+        if tag != "span" or not self.stack:
+            return
+        kind = self.stack.pop()
+        if kind == "skip":
+            self.skip -= 1
+        elif kind == "keep":
+            self.out.append("</span>")
+
+    def handle_data(self, data):
+        if not self.skip:
+            self.out.append(html.escape(re.sub(r"\s+", " ", data)))
+
+
+def all_headlines(text: str):
+    """그날 헤드라인 전부 [(펜 표시가 남은 HTML, 글자만)] — 신문형 1면 → 없으면 한 장 요약 기사 제목"""
+    items = []
+    m = re.search(r'<ol[^>]*class="heads"[^>]*>(.*?)</ol>', text, re.IGNORECASE | re.DOTALL)
+    if m:
+        items = re.findall(r"<li[^>]*>(.*?)</li>", m.group(1), re.IGNORECASE | re.DOTALL)
+    if not items:
+        items = re.findall(r'<li class="story">.*?<h2[^>]*>(.*?)</h2>', text, re.IGNORECASE | re.DOTALL)
+    out = []
+    for frag in items:
+        p = _HeadClean()
+        p.feed(frag)
+        p.close()
+        rich = "".join(p.out).strip()
+        plain = _strip(frag)
+        if plain:
+            out.append((rich, plain))
+    return out
+
+
 def collect_days():
     days, skipped = {}, []
     if not CARDS.exists():
@@ -117,11 +179,111 @@ def collect_days():
                 if headline:
                     break
         e["headline"] = headline
+        heads = []
+        for k in VARIANT_KEYS:
+            if k in e["files"]:
+                heads = all_headlines(read_text(CARDS / e["files"][k]))
+                if heads:
+                    break
+        e["heads"] = heads
         out.append(e)
     return out, skipped
 
 
-def render_page(template: str, days, idx: int, base: str) -> str:
+OG_IMAGE = ASSETS / "og-image.png"  # 링크 미리보기 썸네일 (1200x630)
+
+
+def find_chrome():
+    """썸네일을 찍을 Chrome. GitHub Actions(ubuntu)에는 google-chrome 이 기본으로 있다. 없으면 기본 썸네일을 쓴다"""
+    cands = [os.environ.get("CHROME_PATH", ""), "google-chrome", "google-chrome-stable", "chromium", "chromium-browser",
+             r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+             "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"]
+    for c in cands:
+        if c and (shutil.which(c) or Path(c).exists()):
+            return shutil.which(c) or c
+    return None
+
+
+def make_thumbs(days):
+    """날짜마다 1번 헤드라인을 넣은 링크 미리보기 썸네일(_site/cards/YYYY-MM-DD.og.png)을 찍는다.
+    실패해도 배포는 멈추지 않고, 그날은 기본 썸네일(assets/og-image.png)을 쓴다. 돌려주는 값: {날짜: 사이트 안 경로}"""
+    targets = [d for d in days[:THUMB_DAYS] if d.get("heads")]
+    if not targets or not THUMB_TEMPLATE.exists():
+        return {}
+    chrome = find_chrome()
+    if not chrome:
+        print("::notice title=썸네일 기본 이미지 사용::Chrome을 찾지 못해 날짜별 썸네일을 만들지 않았습니다")
+        return {}
+    tpl = read_text(THUMB_TEMPLATE)
+    tmp = Path(tempfile.mkdtemp(prefix="cardnews-thumb-"))
+
+    def shot(d):
+        rich, _ = d["heads"][0]
+        page = (tpl.replace("{{FONTS}}", FONTS.resolve().as_uri())
+                .replace("{{DATE}}", html.escape(d["label"].replace(" (", "(")))
+                .replace("{{HEAD}}", rich)
+                .replace("{{COUNT}}", str(len(d["heads"]))))
+        src = tmp / f"{d['date']}.html"
+        src.write_text(page, encoding="utf-8")
+        out = OUT / "cards" / f"{d['date']}.og.png"
+        cmd = [chrome, "--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars", "--mute-audio",
+               "--force-device-scale-factor=1", "--window-size=1200,630", "--virtual-time-budget=4000",
+               "--allow-file-access-from-files", f"--screenshot={out}", src.resolve().as_uri()]
+        try:
+            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30, check=False)
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+        return d["date"], out.exists() and out.stat().st_size > 5000
+
+    done = {}  # 한 장에 1초 남짓. Chrome 여러 개를 동시에 띄우면 멈출 수 있어 차례로 찍는다
+    for date_s, ok in map(shot, targets):
+        if ok:
+            done[date_s] = f"cards/{date_s}.og.png"
+        else:
+            print(f"::warning title=썸네일 실패::{date_s} — 기본 썸네일을 씁니다")
+    shutil.rmtree(tmp, ignore_errors=True)
+    return done
+
+
+def og_tags(site_url: str, page_path: str, image: str = "") -> str:
+    """카톡·슬랙 등 링크 미리보기용 태그. 썸네일은 전체 주소여야 해서 config.json 의 site_url 이 필요하다.
+    썸네일 주소 끝에 파일 내용 해시(?v=)를 붙여, 이미지를 바꾸면 미리보기도 새로 받아가게 한다."""
+    if not site_url:
+        return ""
+    site_url = site_url.rstrip("/") + "/"
+    tags = [f'<meta property="og:url" content="{html.escape(site_url + page_path)}">',
+            '<meta property="og:site_name" content="영업혁신실 신문">']
+    image = image or f"assets/{OG_IMAGE.name}"
+    built = OUT / image
+    if built.exists():
+        ver = hashlib.md5(built.read_bytes()).hexdigest()[:8]
+        img = html.escape(f"{site_url}{image}?v={ver}")
+        tags += [f'<meta property="og:image" content="{img}">',
+                 '<meta property="og:image:width" content="1200">',
+                 '<meta property="og:image:height" content="630">',
+                 '<meta name="twitter:card" content="summary_large_image">']
+    return "\n".join(tags)
+
+
+def og_description(day) -> str:
+    """미리보기 설명: 썸네일에 1번 헤드라인이 있으니 2·3번을 보여 준다"""
+    rest = [plain for _, plain in day.get("heads", [])[1:]]
+    if rest:
+        return " / ".join(f"{i}. {t}" for i, t in enumerate(rest, start=2))
+    return day["headline"]
+
+
+def feedback_block(url: str) -> str:
+    """카드 바로 아래 '의견 보내기' 줄. config.json 의 feedback_url 이 비어 있으면 아무것도 안 보인다"""
+    if not url:
+        return ""
+    return (
+        '<div class="fb"><span>이번 카드뉴스 어땠나요?</span>'
+        f'<a href="{html.escape(url)}" target="_blank" rel="noopener">의견 보내기</a></div>'
+    )
+
+
+def render_page(template: str, days, idx: int, base: str, site_url: str = "", thumbs=None, feedback_url: str = "") -> str:
     """보기 화면 하나 (홈: base='' / 날짜 주소: base='../')"""
     cur = days[idx]
     variants = [
@@ -161,7 +323,9 @@ def render_page(template: str, days, idx: int, base: str) -> str:
     page_title = f"보험 영업 뉴스 · {cur['label']}"
     return (
         template.replace("{{TITLE}}", html.escape(page_title))
-        .replace("{{DESC}}", html.escape(cur["headline"]))
+        .replace("{{DESC}}", html.escape(og_description(cur)))
+        .replace("{{OG}}", og_tags(site_url, "" if base == "" else cur["url"], (thumbs or {}).get(cur["date"], "")))
+        .replace("{{FEEDBACK}}", feedback_block(feedback_url))
         .replace("{{BASE}}", base)
         .replace("{{LEFT}}", left)
         .replace("{{SEG}}", seg)
@@ -205,11 +369,17 @@ def build():
         "window.CARDNEWS_CONFIG = " + json.dumps(js_config, ensure_ascii=False) + ";\n", encoding="utf-8"
     )
 
+    site_url = str(config.get("site_url", "")).strip()
+    feedback_url = str(config.get("feedback_url", "")).strip()
+    thumbs = make_thumbs(days) if site_url else {}
+    if not site_url:
+        print("::warning title=site_url 없음::config.json 에 site_url 이 없어 링크 미리보기 썸네일이 빠집니다")
+
     template = read_text(TEMPLATE)
     if days:
-        (OUT / "index.html").write_text(render_page(template, days, 0, ""), encoding="utf-8")
+        (OUT / "index.html").write_text(render_page(template, days, 0, "", site_url, thumbs, feedback_url), encoding="utf-8")
         for i, d in enumerate(days):
-            (OUT / "cards" / f"{d['date']}.html").write_text(render_page(template, days, i, "../"), encoding="utf-8")
+            (OUT / "cards" / f"{d['date']}.html").write_text(render_page(template, days, i, "../", site_url, thumbs, feedback_url), encoding="utf-8")
     else:
         (OUT / "index.html").write_text(
             '<!doctype html><meta charset="utf-8"><p style="padding:40vh 16px;text-align:center">아직 올라온 카드뉴스가 없어요.</p>',

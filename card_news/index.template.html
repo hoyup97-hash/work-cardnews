@@ -7,6 +7,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="{{TITLE}}">
 <meta property="og:description" content="{{DESC}}">
+{{OG}}
 <meta name="robots" content="noindex, nofollow">
 <!--
   보기 화면 (홈 = 가장 최근 날짜, cards/YYYY-MM-DD.html = 그날).
@@ -56,6 +57,13 @@
   /* 카드뉴스 */
   .card-frame { display: block; width: 100%; height: 70vh; border: 0; }
 
+  /* 카드 바로 아래 '의견 보내기' (config.json 의 feedback_url 이 있을 때만) */
+  .fb { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+        max-width: 640px; margin: 10px auto 0; padding: 0 14px; font-size: 14px; color: var(--ink); }
+  .fb a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px;
+          background: var(--sheet); color: var(--accent); font-weight: 700; text-decoration: none; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+  .fb a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
   /* 화면 맨 아래에 걸쳐 보이는 '지난 카드뉴스' 머리 */
   .peek {
     position: sticky; bottom: 0; z-index: 5; display: grid; grid-template-columns: 1fr auto; align-items: center;
@@ -85,6 +93,7 @@
 <body>
 <header class="bar">{{LEFT}}<span class="sp"></span>{{SEG}}{{SHARE}}</header>
 <iframe class="card-frame" id="card" title="카드뉴스"></iframe>
+{{FEEDBACK}}
 <noscript><p style="text-align:center">카드뉴스를 보려면 자바스크립트를 켜 주세요.</p></noscript>
 {{PEEK}}
 {{ARCHIVE}}

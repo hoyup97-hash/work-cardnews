@@ -31,6 +31,9 @@
 | 보기 방식 종류·버튼 이름, 지난 목록 채우는 방식 | `card_news/scripts/build.py` 의 `VARIANTS`, `render_page` |
 | 공유 버튼 동작(카톡 공유) | `card_news/assets/share.js`, 카카오 키는 `card_news/config.json` |
 | 카톡 미리보기 제목·설명 | `card_news/index.template.html` 의 og 태그 |
+| 카톡 미리보기 썸네일(날짜마다 1번 헤드라인) | `card_news/thumb.template.html`. 배포할 때 `build.py` 가 최근 30일치를 Chrome으로 찍음(`cards/YYYY-MM-DD.og.png`). 글꼴은 `scripts/fonts/` 의 Pretendard. 썸네일 주소는 `config.json` 의 `site_url` 로 만듦 |
+| 카톡 미리보기 기본 썸네일(날짜별 썸네일을 못 찍었을 때) | `card_news/assets/og-image.png` (1200×630) |
+| 카드 아래 '의견 보내기' 버튼 | `card_news/config.json` 의 `feedback_url` 에 구글 폼 등 주소를 넣으면 보임(비우면 숨김). 모양은 `index.template.html` 의 `.fb` |
 | 카드 디자인(신문형 5장 / 한 장 요약 2장) | 아래 '카드 디자인 바꾸기' |
 | Claude가 카드를 올릴 때 지키는 규칙 | `card_news/AUTOMATION.md` |
 | 자동 배포 방식 | `.github/workflows/deploy.yml` (웬만하면 건드리지 않음) |
@@ -60,5 +63,5 @@
 1. `card_news/AUTOMATION.md`, `card_news/SETUP.md`, `card_news/README.md`, `card_news/cardnews-site/SKILL.md` 안의 주소
 2. 각자 계정의 cardnews-site 스킬(바뀐 SKILL.md 로 다시 추가)
 3. 걸어 둔 예약 작업 (새 주소로 다시 만들기)
-4. 카카오 개발자 앱의 사이트 도메인
+4. 카카오 개발자 앱의 사이트 도메인, `card_news/config.json` 의 `site_url` (링크 미리보기 썸네일)
 5. 단톡방에 공유했던 사이트 주소 안내
