@@ -313,10 +313,15 @@ def render_page(template: str, days, idx: int, base: str, site_url: str = "", th
                 f'<span class="t">{tag}{html.escape(d["headline"] or "카드뉴스")}</span></a></li>'
             )
         title = "지난 카드뉴스" if is_home else "다른 날 카드뉴스"
+        # 화면 맨 아래 막대: 왼쪽 '지난 카드뉴스'(누르면 목록으로), 오른쪽 '의견 보내기'(feedback_url 이 있을 때)
+        fb_btn = (
+            f'<a class="fbp" href="{html.escape(feedback_url)}" target="_blank" rel="noopener">의견 보내기</a>'
+            if feedback_url else ""
+        )
         peek = (
-            f'<a class="peek" href="#archive"><span class="grab" aria-hidden="true"></span>'
-            f'<span class="ph">{title}</span><span class="pc">{len(others)}건 · 아래로 내려 보기</span>'
-            f'<span class="chev" aria-hidden="true">&#8964;</span></a>'
+            f'<div class="peek"><span class="grab" aria-hidden="true"></span>'
+            f'<a class="pk" href="#archive"><span class="ph">{title} <span class="chev" aria-hidden="true">&#8964;</span></span>'
+            f'<span class="pc">{len(others)}건 · 아래로 내려 보기</span></a>{fb_btn}</div>'
         )
         archive = f'<section class="archive" id="archive" aria-label="{title}"><ul>{"".join(rows)}</ul></section>'
     data = {"variants": variants}
@@ -325,7 +330,7 @@ def render_page(template: str, days, idx: int, base: str, site_url: str = "", th
         template.replace("{{TITLE}}", html.escape(page_title))
         .replace("{{DESC}}", html.escape(og_description(cur)))
         .replace("{{OG}}", og_tags(site_url, "" if base == "" else cur["url"], (thumbs or {}).get(cur["date"], "")))
-        .replace("{{FEEDBACK}}", feedback_block(feedback_url))
+        .replace("{{FEEDBACK}}", "" if peek else feedback_block(feedback_url))
         .replace("{{BASE}}", base)
         .replace("{{LEFT}}", left)
         .replace("{{SEG}}", seg)
