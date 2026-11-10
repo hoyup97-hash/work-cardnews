@@ -283,7 +283,16 @@ def feedback_block(url: str) -> str:
     )
 
 
-def render_page(template: str, days, idx: int, base: str, site_url: str = "", thumbs=None, feedback_url: str = "") -> str:
+def analytics_tag(token: str) -> str:
+    """방문 수 집계(Cloudflare Web Analytics). config.json 의 cf_analytics_token 이 비어 있으면 아무것도 넣지 않는다.
+    카드 원본(embed)은 보기 화면 안에 끼워 보이므로, 보기 화면에만 넣어 한 번 열 때 한 번만 센다"""
+    if not token:
+        return ""
+    beacon = html.escape(json.dumps({"token": token}))
+    return f'<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{beacon}"></script>'
+
+
+def render_page(template: str, days, idx: int, base: str, site_url: str = "", thumbs=None, feedback_url: str = "", cf_token: str = "") -> str:
     """보기 화면 하나 (홈: base='' / 날짜 주소: base='../')"""
     cur = days[idx]
     variants = [
@@ -337,6 +346,7 @@ def render_page(template: str, days, idx: int, base: str, site_url: str = "", th
         .replace("{{SHARE}}", f'<button type="button" class="share" data-share="{base}{cur["url"]}" data-title="{html.escape(page_title)}" aria-label="카카오톡으로 공유">{_SHARE_SVG}<span>공유</span></button>')
         .replace("{{PEEK}}", peek)
         .replace("{{ARCHIVE}}", archive)
+        .replace("{{ANALYTICS}}", analytics_tag(cf_token))
         .replace("{{DATA}}", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
     )
 
@@ -376,15 +386,16 @@ def build():
 
     site_url = str(config.get("site_url", "")).strip()
     feedback_url = str(config.get("feedback_url", "")).strip()
+    cf_token = str(config.get("cf_analytics_token", "")).strip()
     thumbs = make_thumbs(days) if site_url else {}
     if not site_url:
         print("::warning title=site_url 없음::config.json 에 site_url 이 없어 링크 미리보기 썸네일이 빠집니다")
 
     template = read_text(TEMPLATE)
     if days:
-        (OUT / "index.html").write_text(render_page(template, days, 0, "", site_url, thumbs, feedback_url), encoding="utf-8")
+        (OUT / "index.html").write_text(render_page(template, days, 0, "", site_url, thumbs, feedback_url, cf_token), encoding="utf-8")
         for i, d in enumerate(days):
-            (OUT / "cards" / f"{d['date']}.html").write_text(render_page(template, days, i, "../", site_url, thumbs, feedback_url), encoding="utf-8")
+            (OUT / "cards" / f"{d['date']}.html").write_text(render_page(template, days, i, "../", site_url, thumbs, feedback_url, cf_token), encoding="utf-8")
     else:
         (OUT / "index.html").write_text(
             '<!doctype html><meta charset="utf-8"><p style="padding:40vh 16px;text-align:center">아직 올라온 카드뉴스가 없어요.</p>',

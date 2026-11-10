@@ -34,6 +34,7 @@
 | 카톡 미리보기 썸네일(날짜마다 1번 헤드라인) | `card_news/thumb.template.html`. 배포할 때 `build.py` 가 최근 30일치를 Chrome으로 찍음(`cards/YYYY-MM-DD.og.png`). 글꼴은 `scripts/fonts/` 의 Pretendard. 썸네일 주소는 `config.json` 의 `site_url` 로 만듦 |
 | 카톡 미리보기 기본 썸네일(날짜별 썸네일을 못 찍었을 때) | `card_news/assets/og-image.png` (1200×630) |
 | 카드 아래 '의견 보내기' 버튼 | `card_news/config.json` 의 `feedback_url` 에 구글 폼 등 주소를 넣으면 보임(비우면 숨김). 모양은 `index.template.html` 의 `.fb` |
+| 방문 수 집계(Cloudflare Web Analytics) | `card_news/config.json` 의 `cf_analytics_token` 에 Cloudflare 토큰을 넣으면 홈·날짜 화면에 집계 코드가 붙음(비우면 집계 안 함). 결과는 Cloudflare 대시보드 → Web Analytics. 저장소 주소가 바뀌면 Cloudflare에 새 주소로 사이트를 다시 등록 |
 | 카드 디자인(신문형 5장 / 한 장 요약 2장) | 아래 '카드 디자인 바꾸기' |
 | Claude가 카드를 올릴 때 지키는 규칙 | `card_news/AUTOMATION.md` |
 | 자동 배포 방식 | `.github/workflows/deploy.yml` (웬만하면 건드리지 않음) |
