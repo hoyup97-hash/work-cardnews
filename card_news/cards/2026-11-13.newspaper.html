@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>영업혁신실 신문</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- TEMPLATE: 슬라이드 1 = 1면(헤드라인 3개), 2~4 = 기사별 3줄 요약, 5 = 이 기사들도 읽어보세요. CSS·폰트·구조 고정 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<style>
+/* Layout: newspaper sheets in a horizontal swipe deck (4:5, Instagram card-news ratio). One sheet per slide; red pen marks the key phrase on the front page. Single paper look, both themes. */
+:root{
+  --desk:#CFE6EE; --desk-2:#BFDCE7; --paper:#F7F6F2; --ink:#1E1A18; --muted:#6A6560; --rule:#1E1A18;
+  --pen:#D7332B; --blue:#0094C2; --teal:#00A9A1; --chip:#ECEAE3;
+  --font:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--desk:#0E2630;--desk-2:#0B1F28;color-scheme:dark}}
+:root[data-theme="dark"]{--desk:#0E2630;--desk-2:#0B1F28;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--desk)}
+body{font-family:var(--font);color:var(--ink);letter-spacing:-.015em;word-break:keep-all;overflow-wrap:anywhere;
+  background-image:radial-gradient(circle at 20% 10%,var(--desk-2) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,var(--desk-2) 0 1.5px,transparent 2.5px);
+  background-size:38px 38px,52px 52px;padding-block:20px 28px}
+.deck-wrap{max-width:520px;margin:0 auto;position:relative}
+.count{background:rgba(30,26,24,.72);color:#fff;font-size:.82rem;padding:4px 11px;border-radius:999px;font-variant-numeric:tabular-nums}
+.deck{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));gap:16px;scroll-padding:0 max(16px,env(safe-area-inset-left,0px))}
+.deck::-webkit-scrollbar{display:none}
+.sheet{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;aspect-ratio:4/5;background:var(--paper);color:var(--ink);
+  box-shadow:0 1px 0 rgba(0,0,0,.05),0 10px 24px -12px rgba(0,0,0,.35);padding:18px 18px 16px;display:flex;flex-direction:column;min-width:0}
+.mast{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.74rem;letter-spacing:.02em;padding-bottom:7px;border-bottom:3px double var(--rule)}
+.mast b{font-weight:700;color:var(--blue)}
+.foot{margin-top:auto;padding-top:8px;border-top:3px double var(--rule);display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;font-size:.7rem;color:var(--muted)}
+/* front page */
+.dateline{display:flex;align-items:center;gap:10px;margin:16px 0 0;font-size:1.05rem;font-weight:700}
+.dateline::before,.dateline::after{content:"";flex:1;height:2px;background:var(--rule)}
+.nameplate{border:2px solid var(--rule);text-align:center;font-size:2rem;font-weight:700;letter-spacing:.18em;padding:6px 4px 4px;margin-top:-1px;line-height:1.2}
+.heads{list-style:none;margin:auto 0;padding:18px 0;display:grid;gap:18px}
+.heads li{display:grid;grid-template-columns:1.6em 1fr;font-size:1.32rem;font-weight:700;line-height:1.42}
+.heads .n{font-variant-numeric:tabular-nums}
+.circ{position:relative;white-space:nowrap;padding:0 2px}
+.circ::before,.circ::after{content:"";position:absolute;inset:-4px -3px -3px -4px;border:2px solid var(--pen);border-radius:50%;transform:rotate(-2.5deg);pointer-events:none}
+.circ::after{inset:-2px -1px -5px -6px;transform:rotate(1.8deg);opacity:.75}
+.ul{background-image:linear-gradient(var(--pen),var(--pen));background-repeat:no-repeat;background-size:100% 2.5px;background-position:0 100%;padding-bottom:2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+/* article sheets */
+.art-top{display:flex;gap:6px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:6px;background:var(--blue);color:#fff;font-weight:700;font-size:.95rem}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--ink)}
+.src{margin-left:auto;font-size:.72rem;color:var(--muted)}
+.art h2{margin:10px 0 0;font-size:1.12rem;font-weight:700;line-height:1.45;text-wrap:balance}
+.label{margin:16px 0 8px;display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:700;color:var(--pen)}
+.label::after{content:"";flex:1;height:1px;background:var(--pen);opacity:.5}
+.three{margin:0;padding:0;list-style:none;display:grid;gap:10px;counter-reset:t}
+.three li{counter-increment:t;display:grid;grid-template-columns:1.4em 1fr;font-size:.93rem;line-height:1.62}
+.three li::before{content:counter(t) ".";font-weight:700;color:var(--ink)}
+.go{display:inline-flex;align-items:center;min-height:36px;color:var(--blue);text-decoration:none;font-size:.82rem}
+/* more */
+.more-title{margin:22px 0 4px;font-size:1.7rem;font-weight:400;line-height:1.3}
+.more{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px}
+.more a{display:grid;grid-template-columns:1em 1fr;gap:6px;padding:7px 0;color:var(--ink);text-decoration:none;font-size:.98rem;font-weight:700;line-height:1.45}
+.more a::before{content:"•"}
+.more small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);margin-top:2px}
+.sched{margin:14px 0 0;padding:10px 12px;background:var(--chip);font-size:.82rem;line-height:1.6}
+.sched b{color:var(--pen)}
+/* nav */
+.nav{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:14px}
+.dots{display:flex;gap:7px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(30,26,24,.25);border:0;padding:0;cursor:pointer}
+.dot[aria-current="true"]{background:var(--blue)}
+.arrow{width:40px;height:40px;border-radius:50%;border:0;background:var(--paper);color:var(--ink);font-size:1.1rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.arrow:disabled{opacity:.35;cursor:default}
+.arrow:focus-visible,.dot:focus-visible,.go:focus-visible,.more a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .dot{background:rgba(255,255,255,.3)}}
+:root[data-theme="dark"] .dot{background:rgba(255,255,255,.3)}
+@media (max-width:380px){.nameplate{font-size:1.7rem}.heads li{font-size:1.15rem}.three li{font-size:.88rem}}
+@media (prefers-reduced-motion:reduce){.deck{scroll-behavior:auto}}
+</style>
+</head><body>
+
+<div class="deck-wrap">
+  <div class="deck" id="deck" tabindex="0" aria-label="영업혁신실 신문 슬라이드">
+    <section class="sheet" aria-label="1면">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>푸본현대생명</span></div>
+      <div class="dateline">11월 13일(금)</div>
+      <div class="nameplate">보험 영업 신문</div>
+      <ol class="heads">
+        <li><span class="n">1.</span><span>근로자추정제 비용 누가 감당하나… 고능률 설계사 실수령액 <span class="circ">최대 33%</span> 감소 우려</span></li>
+        <li><span class="n">2.</span><span>신경계질환 진단금, 중증도 높을수록 커진다… 라이나생명 <span class="ul">‘통합특약’ 배타적사용권</span></span></li>
+        <li><span class="n">3.</span><span>보험사 <span class="ul">'CEO 선임' 판 바뀐다</span>… 현직 대표 '부당 개입' 차단</span></li>
+      </ol>
+      <div class="foot"><span>GA 2 · FP 0 · BA 0 · TM 0</span><span>다음 장에서 3줄 요약 →</span></div>
+    </section>
+
+    <section class="sheet art" aria-label="1번 기사">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 13일(금)</span></div>
+      <div class="art-top"><span class="num">1</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">보험저널 11.12</span></div>
+      <h2>“근로자추정제로 늘어난 비용, 누가 감당하나”… 고능률 설계사 실수령액 최대 33% 감소 우려</h2>
+      <div class="label">3줄 요약</div>
+      <ol class="three">
+        <li><span>근로자추정제 도입 가능성이 점쳐지면서, GA 설계사가 근로자로 인정될 경우 늘어나는 4대보험·퇴직금 등 비용을 누가 감당할지가 쟁점이며 고능률 설계사 실수령액은 최대 33% 감소 우려.</span></li>
+        <li><span>별도 수수료 재원이 마련되는 것은 아니기 때문이며, GA 설계사 33만3,254명 중 5%가 근로자로 인정되면 연간 추가 부담은 약 1,458억원(10%면 약 2,916억원)으로 추산.</span></li>
+        <li><span>연간 모집수수료 3억원인 설계사의 감소율은 약 33%에 이른다는 시뮬레이션이며, 업계에서는 시행 시기와 속도에 대한 신중한 검토가 요구된다는 목소리.</span></li>
+      </ol>
+      <div class="foot"><span>2/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33899">원문 보기 →</a></div>
+    </section>
+
+    <section class="sheet art" aria-label="2번 기사">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 13일(금)</span></div>
+      <div class="art-top"><span class="num">2</span><span class="tag">전 채널</span><span class="tag">상품</span><span class="src">보험저널 11.12</span></div>
+      <h2>신경계질환 진단금, 중증도 높을수록 커진다…라이나생명 ‘통합특약’ 6개월 배타적사용권</h2>
+      <div class="label">3줄 요약</div>
+      <ol class="three">
+        <li><span>라이나생명이 이달 1일 출시한 ‘(무)신경계질환통합진단특약’이 6개월 배타적사용권을 획득했으며, 경증부터 중증까지 신경계질환(G코드) 진단 보장을 하나로 통합한 특약.</span></li>
+        <li><span>신경과·신경외과 전문의 자문을 거쳐 질환을 1~5종으로 분류하고, 진단 시 해당하는 지급 항목의 진단보험금을 합산해 지급하며 종별 누적 지급액은 특약 가입금액의 2~100%.</span></li>
+        <li><span>라이나생명은 질환별 특성에 맞춘 보장을 내세우며, 앞으로도 고객에게 필요한 보장 영역을 발굴하겠다는 입장.</span></li>
+      </ol>
+      <div class="foot"><span>3/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33883">원문 보기 →</a></div>
+    </section>
+
+    <section class="sheet art" aria-label="3번 기사">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 13일(금)</span></div>
+      <div class="art-top"><span class="num">3</span><span class="tag">전 채널</span><span class="tag">제도</span><span class="src">보험저널 11.12</span></div>
+      <h2>보험사 'CEO 선임' 판 바뀐다…현직 대표 '부당 개입' 차단·성과급 '환수' 추진</h2>
+      <div class="label">3줄 요약</div>
+      <ol class="three">
+        <li><span>정부와 더불어민주당은 12일 당정협의회를 열고 25개 과제의 금융회사 지배구조 개선방안을 발표했으며, CEO 후보 추천위원회를 전원 독립이사로 구성하도록 법 개정이 추진됨.</span></li>
+        <li><span>현직 CEO는 독립이사·감사 추천 회의에 참석할 수 없고 부당 개입 시 해임권고·직무정지·경고 등 제재 대상이 되며, 임원 성과급 이연 비율 40%→50%, 이연 기간 3년→5년 상향이 검토됨.</span></li>
+        <li><span>금융위원회는 지배구조법 개정안을 연내 마련할 계획이며, 은행지주 CEO 연임 제한은 보험사에 적용되지 않음.</span></li>
+      </ol>
+      <div class="foot"><span>4/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33890">원문 보기 →</a></div>
+    </section>
+
+    <section class="sheet" aria-label="이 기사들도 읽어보세요">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 13일(금)</span></div>
+      <h2 class="more-title">이 기사들도 읽어보세요!</h2>
+      <ul class="more">
+        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33897"><span>오래 살수록 커지는 노후불안…보험사엔 '연금·돌봄' 새 기회<small>전 채널 · 보험저널 11.12</small></span></a></li>
+        <li><a href="https://www.fins.co.kr/news/articleView.html?idxno=110540"><span>보험 가입 늘려도 보장 공백 여전…‘가입률 중심 평가’ 한계<small>전 채널 · 보험매일 11.12</small></span></a></li>
+        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33881"><span>“GA 내부통제, 어디까지 왔나”…준법감시인 워크숍서 현안 집중 조명<small>GA · 보험저널 11.12</small></span></a></li>
+      </ul>
+      <div class="sched"><b>일정</b> 11.16 분급 3차 FAQ 설명회 · 11.20 보험판매전문회사 입법토론회 · 12.01 생보협회 비회원 사업자 광고심의 신청 규정 시행 · 12.10 GA협회 준법감시인 워크숍 · 27.01.01 4년 분급·경영평가 GA 항목 시행</div>
+      <div class="foot"><span>5/5</span><span>11.13 07:30 기준 · 원문 요약</span></div>
+    </section>
+  </div>
+  <div class="nav">
+    <button class="arrow" id="prev" type="button" aria-label="이전 슬라이드">←</button>
+    <div class="dots" id="dots"></div>
+    <div class="count" id="count" aria-live="polite">1/5</div>
+    <button class="arrow" id="next" type="button" aria-label="다음 슬라이드">→</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck'),sheets=[].slice.call(deck.querySelectorAll('.sheet')),
+      dots=document.getElementById('dots'),count=document.getElementById('count'),
+      prev=document.getElementById('prev'),next=document.getElementById('next'),cur=0;
+  sheets.forEach(function(s,i){var b=document.createElement('button');b.className='dot';b.type='button';
+    b.setAttribute('aria-label',(i+1)+'번 슬라이드');b.onclick=function(){go(i)};dots.appendChild(b);});
+  function go(i){i=Math.max(0,Math.min(sheets.length-1,i));deck.scrollTo({left:sheets[i].offsetLeft-sheets[0].offsetLeft,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+  function sync(){var w=sheets[1]?sheets[1].offsetLeft-sheets[0].offsetLeft:1;cur=Math.round(deck.scrollLeft/w);
+    count.textContent=(cur+1)+'/'+sheets.length;prev.disabled=cur===0;next.disabled=cur===sheets.length-1;
+    [].forEach.call(dots.children,function(d,i){d.setAttribute('aria-current',i===cur?'true':'false')});}
+  prev.onclick=function(){go(cur-1)};next.onclick=function(){go(cur+1)};
+  deck.addEventListener('scroll',function(){requestAnimationFrame(sync)},{passive:true});
+  deck.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1)}});
+  sync();
+})();
+</script>
+</body></html>
