@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>영업혁신실 신문</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- TEMPLATE: 슬라이드 1 = 1면(헤드라인 3개), 2~4 = 기사별 3줄 요약, 5 = 이 기사들도 읽어보세요. CSS·폰트·구조 고정 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<style>
+/* Layout: newspaper sheets in a horizontal swipe deck (4:5, Instagram card-news ratio). One sheet per slide; red pen marks the key phrase on the front page. Single paper look, both themes. */
+:root{
+  --desk:#CFE6EE; --desk-2:#BFDCE7; --paper:#F7F6F2; --ink:#1E1A18; --muted:#6A6560; --rule:#1E1A18;
+  --pen:#D7332B; --blue:#0094C2; --teal:#00A9A1; --chip:#ECEAE3;
+  --font:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--desk:#0E2630;--desk-2:#0B1F28;color-scheme:dark}}
+:root[data-theme="dark"]{--desk:#0E2630;--desk-2:#0B1F28;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--desk)}
+body{font-family:var(--font);color:var(--ink);letter-spacing:-.015em;word-break:keep-all;overflow-wrap:anywhere;
+  background-image:radial-gradient(circle at 20% 10%,var(--desk-2) 0 2px,transparent 3px),radial-gradient(circle at 70% 60%,var(--desk-2) 0 1.5px,transparent 2.5px);
+  background-size:38px 38px,52px 52px;padding-block:20px 28px}
+.deck-wrap{max-width:520px;margin:0 auto;position:relative}
+.count{background:rgba(30,26,24,.72);color:#fff;font-size:.82rem;padding:4px 11px;border-radius:999px;font-variant-numeric:tabular-nums}
+.deck{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));gap:16px;scroll-padding:0 max(16px,env(safe-area-inset-left,0px))}
+.deck::-webkit-scrollbar{display:none}
+.sheet{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;aspect-ratio:4/5;background:var(--paper);color:var(--ink);
+  box-shadow:0 1px 0 rgba(0,0,0,.05),0 10px 24px -12px rgba(0,0,0,.35);padding:18px 18px 16px;display:flex;flex-direction:column;min-width:0}
+.mast{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.74rem;letter-spacing:.02em;padding-bottom:7px;border-bottom:3px double var(--rule)}
+.mast b{font-weight:700;color:var(--blue)}
+.foot{margin-top:auto;padding-top:8px;border-top:3px double var(--rule);display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;font-size:.7rem;color:var(--muted)}
+/* front page */
+.dateline{display:flex;align-items:center;gap:10px;margin:16px 0 0;font-size:1.05rem;font-weight:700}
+.dateline::before,.dateline::after{content:"";flex:1;height:2px;background:var(--rule)}
+.nameplate{border:2px solid var(--rule);text-align:center;font-size:2rem;font-weight:700;letter-spacing:.18em;padding:6px 4px 4px;margin-top:-1px;line-height:1.2}
+.heads{list-style:none;margin:auto 0;padding:18px 0;display:grid;gap:18px}
+.heads li{display:grid;grid-template-columns:1.6em 1fr;font-size:1.32rem;font-weight:700;line-height:1.42}
+.heads .n{font-variant-numeric:tabular-nums}
+.circ{position:relative;white-space:nowrap;padding:0 2px}
+.circ::before,.circ::after{content:"";position:absolute;inset:-4px -3px -3px -4px;border:2px solid var(--pen);border-radius:50%;transform:rotate(-2.5deg);pointer-events:none}
+.circ::after{inset:-2px -1px -5px -6px;transform:rotate(1.8deg);opacity:.75}
+.ul{background-image:linear-gradient(var(--pen),var(--pen));background-repeat:no-repeat;background-size:100% 2.5px;background-position:0 100%;padding-bottom:2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+/* article sheets */
+.art-top{display:flex;gap:6px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:6px;background:var(--blue);color:#fff;font-weight:700;font-size:.95rem}
+.tag{font-size:.7rem;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--ink)}
+.src{margin-left:auto;font-size:.72rem;color:var(--muted)}
+.art h2{margin:10px 0 0;font-size:1.12rem;font-weight:700;line-height:1.45;text-wrap:balance}
+.label{margin:16px 0 8px;display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:700;color:var(--pen)}
+.label::after{content:"";flex:1;height:1px;background:var(--pen);opacity:.5}
+.three{margin:0;padding:0;list-style:none;display:grid;gap:10px;counter-reset:t}
+.three li{counter-increment:t;display:grid;grid-template-columns:1.4em 1fr;font-size:.93rem;line-height:1.62}
+.three li::before{content:counter(t) ".";font-weight:700;color:var(--ink)}
+.go{display:inline-flex;align-items:center;min-height:36px;color:var(--blue);text-decoration:none;font-size:.82rem}
+/* more */
+.more-title{margin:22px 0 4px;font-size:1.7rem;font-weight:400;line-height:1.3}
+.more{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:4px}
+.more a{display:grid;grid-template-columns:1em 1fr;gap:6px;padding:7px 0;color:var(--ink);text-decoration:none;font-size:.98rem;font-weight:700;line-height:1.45}
+.more a::before{content:"•"}
+.more small{display:block;font-weight:400;font-size:.72rem;color:var(--muted);margin-top:2px}
+.sched{margin:14px 0 0;padding:10px 12px;background:var(--chip);font-size:.82rem;line-height:1.6}
+.sched b{color:var(--pen)}
+/* nav */
+.nav{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:14px}
+.dots{display:flex;gap:7px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(30,26,24,.25);border:0;padding:0;cursor:pointer}
+.dot[aria-current="true"]{background:var(--blue)}
+.arrow{width:40px;height:40px;border-radius:50%;border:0;background:var(--paper);color:var(--ink);font-size:1.1rem;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.arrow:disabled{opacity:.35;cursor:default}
+.arrow:focus-visible,.dot:focus-visible,.go:focus-visible,.more a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .dot{background:rgba(255,255,255,.3)}}
+:root[data-theme="dark"] .dot{background:rgba(255,255,255,.3)}
+@media (max-width:380px){.nameplate{font-size:1.7rem}.heads li{font-size:1.15rem}.three li{font-size:.88rem}}
+@media (prefers-reduced-motion:reduce){.deck{scroll-behavior:auto}}
+</style>
+</head><body>
+
+<div class="deck-wrap">
+  <div class="deck" id="deck" tabindex="0" aria-label="영업혁신실 신문 슬라이드">
+    <section class="sheet" aria-label="1면">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>푸본현대생명</span></div>
+      <div class="dateline">11월 15일(일)</div>
+      <div class="nameplate">보험 영업 신문</div>
+      <ol class="heads">
+        <li><span class="n">1.</span><span>‘단기납 종신’ 10년 시점 환급률… 메트라이프 <span class="circ">124.8%</span>·동양 등 6개사 117.6%</span></li>
+        <li><span class="n">2.</span><span><span class="ul">‘보험판매전문회사’</span> 도입 논의 재점화… 20일 국회서 입법토론회</span></li>
+        <li><span class="n">3.</span><span>4년 분급에 <span class="ul">허위·가공계약</span> 초기 돈벌이 막힌다</span></li>
+      </ol>
+      <div class="foot"><span>GA 2 · FP 0 · BA 0 · TM 0</span><span>다음 장에서 3줄 요약 →</span></div>
+    </section>
+    <section class="sheet art" aria-label="1번 기사">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 15일(일)</span></div>
+      <div class="art-top"><span class="num">1</span><span class="tag">전 채널</span><span class="tag">상품</span><span class="src">보험저널 11.13</span></div>
+      <h2>'단기납 종신보험' 7년납 환급률…10년 시점 메트라이프 124.8%·처브 120.0%·동양 등 6개사 117.6%</h2>
+      <div class="label">3줄 요약</div>
+      <ol class="three">
+        <li><span>14개 생보사 단기납 종신보험(일반심사형 7년납)의 10년 시점 해약환급률은 달러보험인 메트라이프생명이 124.8%로 가장 높고, 처브라이프 ‘New수(秀)’가 120.0%로 원화 상품 중 유일한 120%대.</span></li>
+        <li><span>동양생명·라이나생명·하나생명·신한라이프·ABL생명·푸본현대생명(‘MAX원픽’) 6개사가 117.6%로 뒤를 이었고, 7년 시점에는 푸본현대생명 등 8개사가 100.0%(40세 남성·가입금액 1000만원 기준).</span></li>
+        <li><span>회사별로 체증형·체감납입형·납입면제 여부와 통화가 달라 10년 환급률만으로 유불리를 판단하기 어렵고, 가입 초기나 일정 기간 내 해지할 경우 환급금이 납입보험료보다 적거나 없을 수 있음.</span></li>
+      </ol>
+      <div class="foot"><span>2/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33900">원문 보기 →</a></div>
+    </section>
+    <section class="sheet art" aria-label="2번 기사">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 15일(일)</span></div>
+      <div class="art-top"><span class="num">2</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">한국보험신문 11.13</span></div>
+      <h2>‘보험판매전문회사’ 도입 논의 재점화… 20일 국회서 입법토론회 열려</h2>
+      <div class="label">3줄 요약</div>
+      <ol class="three">
+        <li><span>보험판매채널의 책임성을 높이고 금융소비자 보호를 강화하려는 ‘보험판매전문회사’ 제도 도입 논의가 국회에서 다시 본격화되며, 11월 20일 국회 의원회관에서 입법토론회가 열림.</span></li>
+        <li><span>2008년 정부 법안 추진 이후 장기간 논의된 과제로, 올해 주호영 의원과 민병덕 의원이 각각 관련 법안을 대표발의했고 두 법안에 여야 의원 총 24명이 참여.</span></li>
+        <li><span>판매채널의 전문성과 책임성을 제도로 어떻게 확보할지가 핵심 쟁점이며, 그동안 논의돼 온 입법 과제를 구체적인 제도 개선으로 연결하기 위한 방안을 모색할 예정.</span></li>
+      </ol>
+      <div class="foot"><span>3/5</span><a class="go" href="https://www.insnews.co.kr/news/articleView.html?idxno=93828">원문 보기 →</a></div>
+    </section>
+    <section class="sheet art" aria-label="3번 기사">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 15일(일)</span></div>
+      <div class="art-top"><span class="num">3</span><span class="tag">GA</span><span class="tag">제도</span><span class="src">보험저널 11.13</span></div>
+      <h2>“작성계약 차익거래도 이제 끝물?”… 4년 분급에 허위·가공계약 초기 돈벌이 막힌다</h2>
+      <div class="label">3줄 요약</div>
+      <ol class="three">
+        <li><span>실질 보장수요 없이 계약을 만들어 모집수수료 차익을 챙기는 작성계약이 내년 4년 수수료 분급 시행으로 설 자리가 좁아질 전망.</span></li>
+        <li><span>누적 모집수수료와 해약환급금의 합이 누적 납입보험료를 넘는 시점부터 차익이 생기는데, 4년 분급은 계약 초기 집중 지급되던 수수료를 선지급수수료와 유지관리수수료로 나눠 지급.</span></li>
+        <li><span>다만 4년 분급은 차익거래를 원천적으로 없애기보다 차익 실현 시점을 늦추는 효과라는 분석이며, 실질적 근절 여부는 차익거래 금지 규제와 보험사·GA 내부통제의 실효성에 달려 있음.</span></li>
+      </ol>
+      <div class="foot"><span>4/5</span><a class="go" href="https://www.insjournal.co.kr/news/articleView.html?idxno=33908">원문 보기 →</a></div>
+    </section>
+    <section class="sheet" aria-label="이 기사들도 읽어보세요">
+      <div class="mast"><span><b>영업혁신실</b> · 영업기획팀</span><span>11월 15일(일)</span></div>
+      <h2 class="more-title">이 기사들도 읽어보세요!</h2>
+      <ul class="more">
+        <li><a href="https://www.insjournal.co.kr/news/articleView.html?idxno=33903"><span>한화생명, 보험손익 176% 급증에도 3분기 적자…'투자손실'이 발목<small>전 채널 · 보험저널 11.13</small></span></a></li>
+        <li><a href="https://www.insnews.co.kr/news/articleView.html?idxno=93832"><span>미래에셋생명, 3분기 누적 매출 8조889억원… 보유 CSM 12.7%↑<small>전 채널 · 한국보험신문 11.13</small></span></a></li>
+      </ul>
+      <div class="sched"><b>일정</b> 11.16 분급 3차 FAQ 설명회 · 11.20 보험판매전문회사 입법토론회 · 11월 말 GA 정보보안 1차 서면점검 · 12.01 생보협회 비회원 사업자 광고심의 신청 규정 시행 · 12.10 GA협회 준법감시인 워크숍 · 27.01.01 4년 분급·경영평가 GA 항목 시행</div>
+      <div class="foot"><span>5/5</span><span>11.15 07:30 기준 · 원문 요약</span></div>
+    </section>
+  </div>
+  <div class="nav">
+    <button class="arrow" id="prev" type="button" aria-label="이전 슬라이드">←</button>
+    <div class="dots" id="dots"></div>
+    <div class="count" id="count" aria-live="polite">1/5</div>
+    <button class="arrow" id="next" type="button" aria-label="다음 슬라이드">→</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck'),sheets=[].slice.call(deck.querySelectorAll('.sheet')),
+      dots=document.getElementById('dots'),count=document.getElementById('count'),
+      prev=document.getElementById('prev'),next=document.getElementById('next'),cur=0;
+  sheets.forEach(function(s,i){var b=document.createElement('button');b.className='dot';b.type='button';
+    b.setAttribute('aria-label',(i+1)+'번 슬라이드');b.onclick=function(){go(i)};dots.appendChild(b);});
+  function go(i){i=Math.max(0,Math.min(sheets.length-1,i));deck.scrollTo({left:sheets[i].offsetLeft-sheets[0].offsetLeft,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+  function sync(){var w=sheets[1]?sheets[1].offsetLeft-sheets[0].offsetLeft:1;cur=Math.round(deck.scrollLeft/w);
+    count.textContent=(cur+1)+'/'+sheets.length;prev.disabled=cur===0;next.disabled=cur===sheets.length-1;
+    [].forEach.call(dots.children,function(d,i){d.setAttribute('aria-current',i===cur?'true':'false')});}
+  prev.onclick=function(){go(cur-1)};next.onclick=function(){go(cur+1)};
+  deck.addEventListener('scroll',function(){requestAnimationFrame(sync)},{passive:true});
+  deck.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();go(cur+1)}if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1)}});
+  sync();
+})();
+</script>
+</body></html>
