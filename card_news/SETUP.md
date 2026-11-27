@@ -6,13 +6,12 @@
 ## 1. GitHub 계정과 저장소 권한
 - GitHub 계정을 만듭니다(개인 계정, 무료).
 - 관리자에게 아이디를 알려주고 `work-cardnews` 저장소 **쓰기 권한**을 받습니다.
-  - 지금: 저장소 Settings → Collaborators 에서 초대 → 메일로 온 초대 수락
-  - 팀 Organization으로 옮긴 뒤: Organization 멤버로 초대
+  - 저장소는 팀 Organization `sales-inno` 소유입니다. 관리자(Owner)가 github.com/sales-inno → People 에서 멤버로 초대 → 메일로 온 초대 수락
 
 ## 2. Claude에 GitHub 연결
 - claude.ai에서 GitHub 계정을 연결하고, Claude GitHub 앱의 저장소 접근에 `work-cardnews`를 허용합니다.
 - github.com → Settings → Applications → Claude 에서 저장소 접근이 **Only select repositories → work-cardnews** 로 돼 있는지 확인합니다(다른 저장소까지 열어 둘 필요 없음).
-- Organization으로 옮긴 뒤에는 Organization 관리자가 Claude 앱 설치를 승인해야 할 수 있습니다.
+- Claude GitHub 앱은 Organization `sales-inno` 에 설치돼 있어야 합니다(Owner가 github.com/apps/claude 에서 sales-inno 선택 → work-cardnews 만 허용). 푸시가 거부되면 이 설치부터 확인합니다.
 
 ## 3. 스킬 세 개 추가 (claude.ai 계정)
 - **fubon-news-newspaper**, **fubon-news-onepage**: 카드 내용(기사 고르기·요약)과 두 보기 방식(신문형·한 장 요약)을 정하는 스킬. 만든 동료에게 공유받아 추가합니다.

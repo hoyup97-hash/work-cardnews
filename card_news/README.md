@@ -58,7 +58,7 @@
 카카오 키 넣는 법 (한 번만):
 1. developers.kakao.com 로그인 → 내 애플리케이션 → 애플리케이션 추가 (이름 예: 팀 카드뉴스)
 2. 앱 설정에서 **Web 플랫폼(사이트 도메인)** 에 사이트 주소의 도메인을 등록
-   예: `https://hoyup97-hash.github.io` (조직으로 옮기면 `https://조직이름.github.io` 도 추가)
+   예: `https://sales-inno.github.io`
 3. 앱 키 중 **JavaScript 키**를 복사해서 `config.json` 의 `kakao_js_key` 에 붙여넣고 커밋
    (JavaScript 키는 등록한 도메인에서만 동작하는 공개용 키라 저장소에 올려도 됩니다)
 

@@ -59,8 +59,8 @@
 - **Claude에게:** "방금 사이트 수정 되돌려줘" → 마지막 변경을 되돌리는 커밋(git revert)을 만들어 올립니다.
 - **GitHub Desktop 에서:** History 탭 → 되돌릴 커밋 우클릭 → **Revert changes in commit** → Push origin.
 
-## 저장소를 팀 Organization으로 옮길 때
-주소(`hoyup97-hash/work-cardnews`, `hoyup97-hash.github.io`)가 바뀌므로 아래를 함께 고칩니다.
+## 저장소 주소가 바뀔 때 (2026-11-27 sales-inno 로 이전 완료)
+주소(`sales-inno/work-cardnews`, `sales-inno.github.io`)가 다시 바뀌면 아래를 함께 고칩니다.
 1. `card_news/AUTOMATION.md`, `card_news/SETUP.md`, `card_news/README.md`, `card_news/cardnews-site/SKILL.md` 안의 주소
 2. 각자 계정의 cardnews-site 스킬(바뀐 SKILL.md 로 다시 추가)
 3. 걸어 둔 예약 작업 (새 주소로 다시 만들기)

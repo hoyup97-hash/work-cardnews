@@ -8,8 +8,8 @@ description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에
 영업혁신실 카드뉴스를 팀 사이트에 올리고 관리하는 스킬이다. 사용자는 저장소·폴더·규칙을 몰라도 된다. 아래 정보로 알아서 처리하고, 저장소 주소나 파일 위치를 사용자에게 되묻지 않는다.
 
 ## 기본 정보 (바뀌면 여기만 고친다)
-- 저장소: `hoyup97-hash/work-cardnews` (GitHub 공개 저장소). 팀 Organization으로 옮기면 owner가 바뀐다.
-- 사이트: https://hoyup97-hash.github.io/work-cardnews/
+- 저장소: `sales-inno/work-cardnews` (GitHub 공개 저장소, 팀 Organization sales-inno 소유).
+- 사이트: https://sales-inno.github.io/work-cardnews/
 - 카드 폴더: `card_news/cards/` — 하루에 하나, 같은 기사로 두 보기 방식: `YYYY-MM-DD.newspaper.html`(신문형), `YYYY-MM-DD.onepage.html`(한 장 요약). 사이트에서는 위쪽 버튼으로 둘을 오가고, 처음 온 사람에게는 무작위로 하나가 보인다.
 - 세부 규칙: `card_news/AUTOMATION.md` — 파일 이름, 템플릿, 검증, 커밋, 보고. **이 스킬과 다르면 저장소 파일이 최신이니 그쪽을 따른다.**
 - 새 담당자 세팅: `card_news/SETUP.md`
@@ -17,7 +17,7 @@ description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에
 - 카드 내용(기사 수집·선정·요약·검수)과 모양: **fubon-news-newspaper**(신문형), **fubon-news-onepage**(한 장 요약) 스킬. 둘 다 각자 계정에 추가돼 있어야 한다. 기사 조사·선정은 한 번만 하고 같은 기사로 두 파일을 만든다.
 
 ## 시작할 때 항상
-1. **저장소 준비.** 세션에 이미 clone돼 있으면 `git pull`. 없으면 `add_repo`(owner=`hoyup97-hash`, repo=`work-cardnews`, access=`push`, 확인·미리보기만이면 `read`)로 붙이고 안내대로 clone한다. 공개 저장소라 읽기만 할 때는 `git clone https://github.com/hoyup97-hash/work-cardnews` 도 된다.
+1. **저장소 준비.** 세션에 이미 clone돼 있으면 `git pull`. 없으면 `add_repo`(owner=`sales-inno`, repo=`work-cardnews`, access=`push`, 확인·미리보기만이면 `read`)로 붙이고 안내대로 clone한다. 공개 저장소라 읽기만 할 때는 `git clone https://github.com/sales-inno/work-cardnews` 도 된다.
 2. **`card_news/AUTOMATION.md`를 끝까지 읽는다.**
 3. 요청을 아래 여섯 가지 중 하나로 정한다.
    - "올려줘·발행해줘·게시해줘" → B 발행
@@ -43,7 +43,7 @@ description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에
 
 ```
 [카드뉴스 발행 — {회차 설명, 예: 평일 아침 정기 / 11/10 07:30 1회}]
-1) hoyup97-hash/work-cardnews 저장소를 준비합니다. 세션에 이미 있으면 pull, 없으면 add_repo(owner=hoyup97-hash, repo=work-cardnews, access=push)로 붙이고 clone 합니다.
+1) sales-inno/work-cardnews 저장소를 준비합니다. 세션에 이미 있으면 pull, 없으면 add_repo(owner=sales-inno, repo=work-cardnews, access=push)로 붙이고 clone 합니다.
 2) card_news/AUTOMATION.md 를 읽고 그 규칙대로 그날 카드뉴스(신문형·한 장 요약 두 파일)를 만들어 커밋·푸시하고, 배포를 확인한 뒤 보고합니다. 카드 내용은 fubon-news-newspaper·fubon-news-onepage 스킬을 따릅니다.
 3) 이번 회차: 발행일은 {사용자가 날짜를 정했으면 그 날짜(예: 2026-11-07), 아니면 실행일(한국시간)}. 수집 기간은 AUTOMATION.md 3번 기준(직전 영업일 08:00 ~ 발행일 07:30). 그날 파일이 이미 있으면 만들지 않고 보고만 합니다. {시험이면: 커밋 메시지 끝에 "(시험)"}.
 4) 어느 단계든 권한·네트워크·스킬 문제로 막히면, 어떤 도구가 어떤 메시지로 막혔는지 정확히 적어 보고하고 끝냅니다. 사람에게 묻지 않습니다.
@@ -52,7 +52,7 @@ description: 영업혁신실 팀 카드뉴스 사이트(GitHub work-cardnews)에
 4. 만든 뒤 사용자에게 알린다: 언제 실행되는지, 결과는 그 실행 기록(예약 작업 화면)에서 본다는 것, 단톡방 공유는 사람이 한다는 것. 결과에 승인 설정이 "자동"이 아니면, 무인 실행 중 승인 대기로 멈출 수 있으니 예약 작업 설정에서 자동 승인을 켜 달라고 한다.
 
 ## D. 확인 (잘 올라갔는지)
-- `git log -5 --oneline`, `card_news/cards/` 목록, https://hoyup97-hash.github.io/work-cardnews/manifest.json?t=현재시각 맨 위 항목(`date`, `variants` 에 newspaper·onepage 둘 다 있는지)을 본다.
+- `git log -5 --oneline`, `card_news/cards/` 목록, https://sales-inno.github.io/work-cardnews/manifest.json?t=현재시각 맨 위 항목(`date`, `variants` 에 newspaper·onepage 둘 다 있는지)을 본다.
 - 예약 실행에 대한 질문이면 `list_triggers`(include_completed=true)로 해당 예약의 마지막 실행 상태와 시각을 본다. 실행은 됐는데 커밋이 없으면, 그 실행 세션에서 막힌 이유를 사용자에게 확인해 달라고 한다.
 - 결과를 짧게 보고한다: 최근 카드 파일 이름·날짜, 사이트 반영 여부, 문제가 있으면 원인 추정.
 
